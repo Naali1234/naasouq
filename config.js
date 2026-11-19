@@ -19,7 +19,20 @@ window.NX_CONFIG = {
 
   // 3) The public address of the website (used for "Share" and "Copy link").
   //    Leave empty to use the address the site is opened from automatically.
-  siteUrl: ""
+  siteUrl: "",
+
+  // 4) Paid plans — everything is ready; change these when you want to start charging.
+  payments: {
+    freeForEveryone: true,     // true = all ads free (now).  false = start the paid plans below
+    freeAdsPerUser: 5,         // free ads each user gets before paying
+    packPriceUSD: 5,           // price of one pack, in US dollars
+    packPosts: 20,             // posts in one pack
+    packValidDays: 90,         // pack is valid this many days after you approve it
+
+    link: "",                  // your payment link, e.g. "https://link.payoneer.com/..."  (leave "" if none)
+    qrImage: "",               // file name of your QR code picture uploaded to GitHub, e.g. "payment-qr.png"
+    instructions: ""           // any extra text, e.g. "Bank: QNB  Account name: ...  IBAN: ..."
+  }
 };
 
 // --- do not change below this line ---
