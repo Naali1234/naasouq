@@ -175,6 +175,8 @@ html[dir=rtl] #chatfab{right:auto;left:16px}
 .chatin{display:flex;gap:8px;margin-top:8px}.chatin textarea{min-height:44px;height:44px;flex:1}
 .inbox .it{cursor:pointer}
 .ubadge{background:#11a36a;color:#fff;border-radius:10px;font-size:11px;padding:1px 7px;font-weight:700}
+#updbar{position:fixed;left:50%;transform:translateX(-50%);bottom:90px;z-index:70;background:var(--ink);color:#fff;border-radius:999px;padding:8px 8px 8px 16px;display:flex;gap:10px;align-items:center;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:92vw}
+@media(min-width:900px){#updbar{bottom:24px}}
 .foot{text-align:center;color:var(--mut);font-size:11.5px;margin-top:24px}
 </style>
 <style>
@@ -226,6 +228,7 @@ html[dir=rtl] #chatfab{right:auto;left:16px}
 <nav><div class="in" id="nav"></div></nav>
 <div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
 <div id="toast"></div>
+<div id="updbar" style="display:none"><span>✨ <span id="updtx">A new version of Naa Souq is ready.</span></span><button class="btn sm" onclick="location.reload()" id="updbtn">Update now</button></div>
 <button id="chatfab" onclick="openChat()" aria-label="Messages">💬<span id="chatbadge"></span></button>
 
 <script>
@@ -266,7 +269,7 @@ const AR={"Home":"الرئيسية","My Ads":"إعلاناتي","Post Ad":"أض�
 "Choose your country":"اختر بلدك","Search country…":"ابحث عن بلد…","Showing {0} · prices in {1} — tap the country to change":"عرض {0} · الأسعار بـ {1} — اضغط على الدولة للتغيير",
 "This marketplace needs you to be signed in to claude.ai to load and post ads.":"يجب تسجيل الدخول لعرض الإعلانات ونشرها.","Ads can't be reached yet — showing what's available. They'll appear automatically once connected.":"تعذّر الوصول إلى الإعلانات حالياً — ستظهر تلقائياً عند الاتصال.",
 "Can't connect right now — please check your internet connection and refresh.":"تعذّر الاتصال حالياً — تحقق من الإنترنت وحدّث الصفحة.","Sign in to post your ads — it's free.":"سجّل الدخول لنشر إعلاناتك — مجاناً.","Sign in to see and manage your ads.":"سجّل الدخول لعرض إعلاناتك وإدارتها.","Continue with Google":"المتابعة باستخدام Google","Use email instead":"استخدم البريد الإلكتروني","Sign in":"تسجيل الدخول","or use email":"أو استخدم البريد الإلكتروني","Your name (for new accounts)":"اسمك (للحسابات الجديدة)","Email":"البريد الإلكتروني","Password (6+ characters)":"كلمة المرور (6 أحرف أو أكثر)","Create account":"إنشاء حساب","Forgot password?":"نسيت كلمة المرور؟","Sign-in didn't complete, please try again":"لم يكتمل تسجيل الدخول، حاول مرة أخرى","Enter your email and a password of 6+ characters":"أدخل بريدك وكلمة مرور من 6 أحرف أو أكثر","Account created — check your email to verify it":"تم إنشاء الحساب — تحقق من بريدك لتأكيده","This email already has an account — tap Sign in":"هذا البريد لديه حساب — اضغط تسجيل الدخول","Wrong email or password":"البريد أو كلمة المرور غير صحيحة","Type your email first":"اكتب بريدك أولاً","Password reset email sent":"تم إرسال رسالة إعادة تعيين كلمة المرور","Signed in":"تم تسجيل الدخول","Signed in as {0}":"مسجّل باسم {0}","Sign out":"تسجيل الخروج",
-"My account":"حسابي","{0} of your ads is waiting for approval. It will go live once the admin approves it.":"{0} من إعلاناتك بانتظار الموافقة. سيُنشر بعد موافقة الإدارة.","{0} of your ads was not approved — see My Ads for the reason.":"{0} من إعلاناتك لم يُقبل — راجع إعلاناتي لمعرفة السبب.","You have a new message from Naa Souq.":"لديك رسالة جديدة من Naa Souq.","Open":"فتح","Message Naa Souq":"راسل Naa Souq","Ask us anything — about your ads, approvals or the website. We reply here.":"اسألنا عن أي شيء — إعلاناتك أو الموافقات أو الموقع. نرد عليك هنا.","Type your message…":"اكتب رسالتك…","Send":"إرسال","You":"أنت","No messages yet — say hello!":"لا توجد رسائل بعد — ابدأ المحادثة!","✅ Sent for approval — your ad goes live once the admin approves it":"✅ أُرسل للمراجعة — سيُنشر إعلانك بعد موافقة الإدارة","✅ Changes saved — sent for approval again":"✅ تم الحفظ — أُرسل للمراجعة مرة أخرى","Waiting for approval":"بانتظار الموافقة","Not approved":"غير مقبول",
+"My account":"حسابي","A new version of Naa Souq is ready.":"نسخة جديدة من Naa Souq جاهزة.","Update now":"حدّث الآن","Updating to the latest version…":"جارٍ التحديث إلى أحدث نسخة…","{0} of your ads is waiting for approval. It will go live once the admin approves it.":"{0} من إعلاناتك بانتظار الموافقة. سيُنشر بعد موافقة الإدارة.","{0} of your ads was not approved — see My Ads for the reason.":"{0} من إعلاناتك لم يُقبل — راجع إعلاناتي لمعرفة السبب.","You have a new message from Naa Souq.":"لديك رسالة جديدة من Naa Souq.","Open":"فتح","Message Naa Souq":"راسل Naa Souq","Ask us anything — about your ads, approvals or the website. We reply here.":"اسألنا عن أي شيء — إعلاناتك أو الموافقات أو الموقع. نرد عليك هنا.","Type your message…":"اكتب رسالتك…","Send":"إرسال","You":"أنت","No messages yet — say hello!":"لا توجد رسائل بعد — ابدأ المحادثة!","✅ Sent for approval — your ad goes live once the admin approves it":"✅ أُرسل للمراجعة — سيُنشر إعلانك بعد موافقة الإدارة","✅ Changes saved — sent for approval again":"✅ تم الحفظ — أُرسل للمراجعة مرة أخرى","Waiting for approval":"بانتظار الموافقة","Not approved":"غير مقبول",
 "Filters":"تصفية","Saved":"المحفوظة","Newest first":"الأحدث أولاً","Price: low to high":"السعر: من الأقل للأعلى","Price: high to low":"السعر: من الأعلى للأقل","Min price":"أقل سعر","Max price":"أعلى سعر","City / Area":"المدينة / المنطقة","Apply":"تطبيق","Clear":"مسح","No saved ads yet — tap the heart on any ad to save it.":"لا توجد إعلانات محفوظة — اضغط على القلب لحفظ أي إعلان.","Sign in to save ads":"سجّل الدخول لحفظ الإعلانات","SOLD":"تم البيع","Terms of use":"شروط الاستخدام","Privacy policy":"سياسة الخصوصية",
 "Your account has been blocked from posting. Contact the site owner if you think this is a mistake.":"تم إيقاف حسابك عن النشر. تواصل مع إدارة الموقع إذا كان ذلك خطأ.","Not allowed: weapons, drugs, alcohol, medicines, counterfeit goods, or anything illegal in your country.":"ممنوع: الأسلحة، المخدرات، الكحول، الأدوية، البضائع المقلدة، أو أي شيء مخالف للقانون في بلدك.","Edit ad":"تعديل الإعلان","Save changes":"حفظ التعديلات","Saving…":"جارٍ الحفظ…","✅ Changes saved":"✅ تم حفظ التعديلات","Couldn't save, please try again":"تعذّر الحفظ، حاول مرة أخرى",
 "{0} of your ads will expire within 24 hours — tap Renew to keep them live for another {1} days.":"{0} من إعلاناتك ستنتهي خلال 24 ساعة — اضغط تجديد لإبقائها {1} أيام أخرى.","Renew":"تجديد","Edit":"تعديل","Marked as sold":"تم وضع علامة مباع","Marked as available":"الإعلان متاح مجدداً","Couldn't update, please try again":"تعذّر التحديث، حاول مرة أخرى","Views":"المشاهدات","Safety tip: meet in a public place and never pay before seeing the item.":"نصيحة أمان: قابل البائع في مكان عام ولا تدفع قبل معاينة المنتج.","Share":"مشاركة","Copy link":"نسخ الرابط","Mark as sold":"تم البيع","Mark as available":"إعادة كمتاح","Report ad":"الإبلاغ عن الإعلان","Link copied":"تم نسخ الرابط","This ad is no longer available":"هذا الإعلان لم يعد متاحاً",
@@ -766,7 +769,24 @@ function subscribeAds(){
 }
 function softRender(){if(view==="home"||view==="my"||view==="admin")render();else if(view==="plans")render();else if(view==="post"){const p=$(".panel .quota");if(p)p.parentElement.innerHTML="<h2>Your posting balance</h2>"+quotaHTML()}}
 
-try{if("serviceWorker" in navigator&&window.top===window.self&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}
+/* ---------- Auto-update: reload when a new version is uploaded ---------- */
+let _ver=null;
+async function checkUpdate(){
+  if(location.protocol!=="https:")return;
+  try{const r=await fetch(location.pathname,{method:"HEAD",cache:"no-store"});const tag=r.headers.get("etag")||r.headers.get("last-modified");if(!tag)return;
+    if(_ver===null){_ver=tag;return}
+    if(tag!==_ver){_ver=tag;newVersion()}}catch(e){}
+}
+function newVersion(){
+  const busy=view==="post"||($("#modal")&&$("#modal").classList.contains("open"))||(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName));
+  if(busy){const b=$("#updbar");if(b){$("#updtx").textContent=T("A new version of Naa Souq is ready.");$("#updbtn").textContent=T("Update now");b.style.display="flex"}}
+  else{toast("✨ "+T("Updating to the latest version…"));setTimeout(()=>location.reload(),900)}
+}
+setInterval(checkUpdate,60000);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});
+window.addEventListener("focus",checkUpdate);
+checkUpdate();
+try{if("serviceWorker" in navigator&&window.top===window.self&&location.protocol==="https:")navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(r=>{try{r.update()}catch(e){}}).catch(()=>{})}catch(e){}
 (async()=>{
   render();
   if(autoDetected)setTimeout(()=>toast(`${flag(country)} `+T("Showing {0} · prices in {1} — tap the country to change",cName(country),curFor(country))),600);
