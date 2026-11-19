@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Naa Souq</title>
+<link rel="icon" href="mark.png">
+<link rel="manifest" href="manifest.json">
+<script src="config.js"></script>
+<script type="module" src="firebase-adapter.js"></script>
+<meta name="theme-color" content="#e62e04">
+<meta name="description" content="Naa Souq — buy and sell locally in your country. Free ads.">
+<link rel="apple-touch-icon" href="app-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Naa Souq">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--red:#e62e04;--org:#ff6a00;--ink:#1d1d1f;--mut:#6b6b70;--line:#ececec;--bg:#f4f4f6;--card:#fff;--ok:#11a36a;--warn:#f0a400}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:14px}
+button,input,select,textarea{font:inherit}
+a{color:inherit}
+header{padding-top:max(8px,env(safe-area-inset-top))!important;position:sticky;top:0;z-index:20;background:linear-gradient(100deg,var(--red),var(--org));color:#fff;padding:8px 14px 12px;box-shadow:0 2px 10px rgba(230,46,4,.25)}
+.top{display:flex;align-items:center;gap:10px;max-width:1100px;margin:0 auto}
+.logo{font-weight:800;font-size:20px;letter-spacing:-.3px;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap}
+.logo b{background:#fff;color:var(--red);border-radius:8px;padding:0 6px;font-size:16px}
+.logo span{font-weight:500;opacity:.95}
+.cbtn{margin-inline-start:auto;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.45);color:#fff;border-radius:999px;padding:6px 12px;cursor:pointer;display:flex;gap:6px;align-items:center;max-width:52vw;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.search{max-width:1100px;margin:10px auto 0;display:flex;background:#fff;border-radius:999px;overflow:hidden;border:2px solid #fff}
+.search input{flex:1;border:0;outline:0;padding:9px 14px;min-width:0;color:var(--ink)}
+.search button{border:0;background:var(--ink);color:#fff;padding:0 16px;cursor:pointer;font-weight:600}
+main{max-width:1100px;margin:0 auto;padding:12px 12px 96px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip img{width:24px;height:24px;border-radius:50%;object-fit:cover;vertical-align:middle;margin:-4px 0;margin-inline-start:-8px;margin-inline-end:6px}
+html[lang=ar] body,html[lang=ar] button,html[lang=ar] input,html[lang=ar] select,html[lang=ar] textarea{font-family:Tajawal,Poppins,system-ui,sans-serif}
+.lbtn{margin-inline-start:6px!important;flex:none;font-weight:700}
+html[dir=rtl] .list .it,html[dir=rtl] .promo{text-align:right}
+.ico{width:1.25em;height:1.25em;object-fit:contain;vertical-align:-.25em}
+.spin{animation:spin 1.2s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.logo img{height:42px;width:auto;display:block}
+.promo img.bn{height:74px;border-radius:12px;flex:none}
+.stock{position:absolute;right:6px;bottom:6px;background:rgba(255,255,255,.85);color:#555;font-size:9.5px;padding:1px 6px;border-radius:999px}
+.catgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(min-width:640px){.catgrid{grid-template-columns:repeat(6,1fr)}}
+label.catup{margin:0;font-weight:500;text-align:center;cursor:pointer;font-size:11.5px}
+.cimg{aspect-ratio:1/1;border-radius:14px;background:#f2f2f2 center/cover;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:4px;border:2px dashed #ddd}
+.promo{background:linear-gradient(120deg,#fff3ec,#ffe6d6);border:1px solid #ffd2b8;border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.promo .big{font-size:28px}
+.promo h3{margin:0 0 2px;font-size:15px}
+.promo p{margin:0;color:#7a3b1d;font-size:12.5px}
+.promo button{margin-left:auto}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:640px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:900px){.grid{grid-template-columns:repeat(5,1fr)}}
+.card{background:var(--card);border-radius:14px;overflow:hidden;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;flex-direction:column;transition:transform .12s}
+.card:active{transform:scale(.98)}
+.ph{aspect-ratio:1/1;background:#fafafa center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:46px;position:relative}
+.ph .tag{position:absolute;left:6px;top:6px;background:rgba(0,0,0,.6);color:#fff;font-size:10.5px;padding:2px 7px;border-radius:999px}
+.cb{padding:8px 10px 10px}
+.ttl{font-size:13px;line-height:1.3;height:34px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.price{color:var(--red);font-weight:700;font-size:16px;margin-top:4px}
+.meta{color:var(--mut);font-size:11.5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn{border:0;border-radius:999px;padding:10px 18px;font-weight:600;cursor:pointer;background:linear-gradient(100deg,var(--red),var(--org));color:#fff}
+.btn.sec{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.dark{background:var(--ink)}
+.btn.sm{padding:6px 12px;font-size:12.5px}
+.btn.okb{background:var(--ok)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.panel{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.panel h2{margin:0 0 10px;font-size:17px}
+label{display:block;font-weight:600;font-size:12.5px;margin:12px 0 5px}
+input[type=text],input[type=tel],input[type=number],input[type=password],select,textarea{width:100%;border:1px solid #ddd;border-radius:10px;padding:10px 12px;background:#fff;outline:0}
+input:focus,select:focus,textarea:focus{border-color:var(--org)}
+textarea{min-height:90px;resize:vertical}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.quota{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.q{background:var(--bg);border-radius:12px;padding:10px;text-align:center}
+.q b{display:block;font-size:20px;color:var(--red)}
+.q small{color:var(--mut);font-size:11px}
+.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
+.alert{border-radius:12px;padding:12px;font-size:13px;margin-bottom:12px;background:#fff7e0;border:1px solid #ffe2a0}
+.alert.err{background:#ffeceb;border-color:#ffc9c4}
+.alert.ok{background:#e8f8f0;border-color:#b5e8cf}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.thumbs div{width:70px;height:70px;border-radius:10px;background:#eee center/cover;position:relative}
+.thumbs button{position:absolute;right:-6px;top:-6px;border:0;background:var(--ink);color:#fff;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px}
+.list .it{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.list .it:last-child{border-bottom:0}
+.list .im{width:58px;height:58px;border-radius:10px;background:#f2f2f2 center/cover;flex:none;display:flex;align-items:center;justify-content:center;font-size:26px}
+.list .tx{flex:1;min-width:0}
+.list .tx b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:#eee;font-weight:600}
+.pill.g{background:#e3f6ed;color:#0b7a4f}.pill.r{background:#ffe5e0;color:#c42a05}.pill.y{background:#fff3cf;color:#8a6100}
+.plans{display:grid;gap:10px}
+@media(min-width:640px){.plans{grid-template-columns:1fr 1fr}}
+.plan{border:2px solid var(--line);border-radius:16px;padding:16px;background:#fff}
+.plan.hot{border-color:var(--org);background:linear-gradient(180deg,#fff7f2,#fff)}
+.plan .pr{font-size:30px;font-weight:800}
+.plan .pr small{font-size:13px;color:var(--mut);font-weight:500}
+.plan ul{padding-left:18px;margin:8px 0 0;line-height:1.8}
+.empty{text-align:center;padding:40px 16px;color:var(--mut)}
+.empty .e{font-size:44px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:center;z-index:20;padding-bottom:env(safe-area-inset-bottom)}
+nav .in{display:flex;width:100%;max-width:600px}
+nav a{flex:1;text-align:center;padding:8px 0 9px;text-decoration:none;color:var(--mut);font-size:11px;font-weight:500}
+nav a i{display:block;font-style:normal;line-height:1}nav a i img{width:28px;height:28px;object-fit:contain;margin-bottom:1px}
+nav a.on{color:var(--red);font-weight:700}
+nav a.post i img{width:48px;height:48px;margin-top:-20px;filter:drop-shadow(0 4px 6px rgba(230,46,4,.35))}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;display:none;align-items:flex-end;justify-content:center}
+.modal.open{display:flex}
+.sheet{background:#fff;width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+@media(min-width:700px){.modal{align-items:center}.sheet{border-radius:20px}}
+.sheet .hd{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.sheet .hd h3{margin:0;font-size:16px;flex:1}
+.x{border:0;background:var(--bg);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px}
+.clist{max-height:60vh;overflow:auto;margin-top:10px}
+.clist div{padding:10px 8px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;gap:10px;align-items:center}
+.clist div.on{background:#fff3ec;font-weight:600}
+.gal{aspect-ratio:4/3;border-radius:14px;background:#f4f4f4 center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-size:70px}
+.gthumbs{display:flex;gap:6px;margin-top:6px}
+.gthumbs div{width:54px;height:54px;border-radius:8px;background:#eee center/cover;cursor:pointer;border:2px solid transparent}
+.gthumbs div.on{border-color:var(--org)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px;margin:10px 0}
+.kv span:nth-child(odd){color:var(--mut)}
+.desc{white-space:pre-wrap;line-height:1.55;background:var(--bg);border-radius:12px;padding:12px;margin:10px 0}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-size:13px;z-index:60;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{opacity:1}
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin:4px 0 10px}
+.sec-h h2{margin:0;font-size:16px}
+.muted{color:var(--mut)}
+.top,.search{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+@media(min-width:900px){main{padding:18px 20px 110px}.logo img{height:52px}.promo img.bn{height:90px}.ttl{font-size:14px}nav .in{max-width:720px}}
+@media(min-width:1300px){.grid{grid-template-columns:repeat(6,1fr)}main,.top,.search{max-width:1280px}}
+@media(max-width:360px){.cbtn{font-size:12px;padding:5px 9px}.logo img{height:36px}}
+.fbar{display:flex;gap:8px;margin:0 0 10px;flex-wrap:wrap;align-items:center}
+select.chip{width:auto;padding:6px 12px;border-radius:999px}
+.fpanel label{margin-top:8px}
+.fav{position:absolute;top:6px;inset-inline-end:6px;border:0;background:rgba(255,255,255,.92);border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:15px;line-height:32px;padding:0;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.sold{position:absolute;left:0;right:0;top:42%;text-align:center;background:rgba(17,163,106,.93);color:#fff;font-weight:800;letter-spacing:2px;padding:4px 0;font-size:13px}
+.card.isSold .ph{filter:grayscale(.45)}
+.foot a{color:var(--mut)}
+.legal{font-size:13px;line-height:1.6;max-height:60vh;overflow:auto}
+.legal h4{margin:12px 0 4px}
+@media(min-width:1300px){.grid{grid-template-columns:repeat(6,1fr)!important}}
+@media(min-width:1600px){.grid{grid-template-columns:repeat(7,1fr)!important}}
+.chips{align-items:center}
+.chipfix{flex:none}
+.marq{flex:1;min-width:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent);mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent)}
+.mtrack{display:flex;width:max-content;animation:mq 80s linear infinite}
+.mset{display:flex;gap:8px;padding-inline-end:8px}
+.marq:hover .mtrack,.marq:active .mtrack,.marq:focus-within .mtrack{animation-play-state:paused}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+html[dir=rtl] .mtrack{animation-name:mqr}
+@keyframes mqr{from{transform:translateX(0)}to{transform:translateX(50%)}}
+@media(prefers-reduced-motion:reduce){.mtrack{animation:none}.marq{overflow-x:auto}}
+.foot{text-align:center;color:var(--mut);font-size:11.5px;margin-top:24px}
+</style>
+<style>
+/* Header option A: big logo | short, slim search | country + language */
+.top{flex-wrap:wrap;max-width:1280px}
+.logo img{height:70px!important}
+.top .search{flex:1;max-width:480px;margin:0;margin-inline-start:auto;border-width:1px}
+.top .search input{padding:5px 14px;font-size:13px;line-height:1.3}
+.top .search button{padding:0 14px;font-size:13px}
+.hbtns{display:flex;gap:6px;align-items:center}
+.hbtns .cbtn{margin-inline-start:0!important}
+@media(max-width:760px){.atx{display:none}}
+@media(max-width:480px){.cnm{display:none}.logo img{height:44px!important}.hbtns{gap:4px}.hbtns .cbtn{padding:5px 8px!important}}
+@media(max-width:760px){.logo img{height:48px!important}.top{flex-wrap:wrap;gap:6px}.hbtns .cbtn{font-size:12px;padding:5px 9px}.hbtns{margin-inline-start:auto}.top{flex-wrap:wrap}.logo{flex:none}.hbtns{flex-wrap:nowrap}.top .search{order:5;flex-basis:88%;max-width:88%;margin:6px auto 0}.top .search input{padding:3px 12px;font-size:12px}.top .search button{padding:0 12px;font-size:12px}}
+@media(max-width:420px){.cfull{display:none}.logo img{height:40px!important}}
+.top .search{height:34px;box-sizing:border-box}
+.top .search input{padding-top:0;padding-bottom:0}
+.hbtns .cbtn{height:34px;box-sizing:border-box;padding:0 13px;font-size:13px;line-height:1}
+.pbtn{display:none!important;background:#fff!important;color:var(--red)!important;font-weight:700;border-color:#fff!important}
+@media(min-width:900px){
+ nav{top:100px;bottom:auto;left:12px;right:auto;width:104px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:6px 0}
+ nav .in{flex-direction:column;max-width:none}
+ nav a{padding:12px 4px;font-size:12px;border-radius:12px;margin:0 6px}
+ nav a.on{background:#fff3ec}
+ nav a i img{width:30px;height:30px}
+ nav a.post i img{width:36px;height:36px;margin-top:0}
+ main{padding-left:130px;padding-right:20px;padding-bottom:40px;max-width:1700px}
+ .top{max-width:1700px!important}
+ .pbtn{display:flex!important}#toast{bottom:30px}}
+@media(max-width:760px){.top .search{height:30px}.hbtns .cbtn{height:30px;padding:0 10px;font-size:12px}}
+.amenu a,.amenu button{display:flex;align-items:center;gap:12px;width:100%;padding:13px 6px;border:0;border-bottom:1px solid var(--line);background:none;font-size:15px;text-decoration:none;color:var(--ink);cursor:pointer;text-align:start}
+.amenu img{width:26px;height:26px;object-fit:contain}
+.stat td,.stat th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:start;font-size:13px}
+.stat{width:100%;border-collapse:collapse}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="logo" onclick="go('home')"><img src="logo-full.png" alt="Naa Souq"></div>
+    <form class="search" onsubmit="event.preventDefault();doSearch()">
+      <input id="q" type="text" placeholder="Search ads in your country…" autocomplete="off">
+      <button type="submit" id="qbtn">Search</button>
+    </form>
+    <div class="hbtns"><button class="cbtn" id="cbtn" onclick="openCountry()"></button><button class="cbtn lbtn" id="lbtn" onclick="toggleLang()">عربي</button><button class="cbtn pbtn" onclick="go('post')" id="pbtn">+ Post Ad</button><button class="cbtn lbtn" id="abtn" onclick="acctBtn()">👤</button></div>
+  </div>
+</header>
+<main id="view"></main>
+<nav><div class="in" id="nav"></div></nav>
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
+<div id="toast"></div>
+
+<script>
+/* ---------- Business rules ---------- */
+const FREE_LAUNCH=true; // free posting for the time being — set to false to start the paid plans
+const FREE_ADS=5, PACK_POSTS=20, PACK_PRICE=5, PACK_DAYS=90, AD_DAYS=5, USD_QAR=3.64, MAX_PHOTOS=3;
+const DAY=864e5;
+
+const CATS=[["Mobile Phones","📱"],["Computers & Laptops","💻"],["Electronics","📺"],["Vehicles","🚗"],["Motorcycles","🏍️"],["Auto Parts & Accessories","🔧"],["Property","🏠"],["Furniture","🛋️"],["Home & Garden","🪴"],["Home Appliances","🔌"],["Clothes, Shoes & Accessories","👗"],["Jewellery & Watches","💍"],["Health & Beauty","💄"],["Kids & Baby","🧸"],["Sports","⚽"],["Gaming","🎮"],["Books & Education","📚"],["Pets & Animals","🐾"],["Home Made Food","🍲"],["Food Items","🛒"],["Services","🛠️"],["Building & Construction","🏗️"],["Industrial & Business Equipment","🏭"],["Events & Party","🎉"],["Travel & Tours","✈️"],["Agriculture","🌾"],["Others","📦"]];
+const BUILTIN=new Map([["Electronics","electronics-2"],["Vehicles","vehicles"],["Property","property"],["Clothes, Shoes & Accessories","clothes-shoes"],["Home & Garden","home-garden-2"],["Services","services-2"],["Home Made Food","food"],["Food Items","food-items"],["Books & Education","books-education"],["Gaming","gaming"],["Health & Beauty","health-beauty"],["Kids & Baby","kids-baby"],["Sports","sports"],["Others","others"],["Mobile Phones","mobile-phones"],["Computers & Laptops","computers-laptops"],["Motorcycles","motorcycles"],["Auto Parts & Accessories","auto-parts"],["Furniture","furniture"],["Home Appliances","home-appliances"],["Pets & Animals","pets-animals"],["Building & Construction","building-construction"],["Industrial & Business Equipment","industrial-equipment"],["Events & Party","events-party"],["Travel & Tours","travel-tours"],["Agriculture","agriculture-2"],["Jewellery & Watches","jewellery-watches"]]);
+const catIcon=c=>(CATS.find(x=>x[0]===c)||["","📦"])[1];
+
+const COUNTRIES=("AF:Afghanistan|AL:Albania|DZ:Algeria|AD:Andorra|AO:Angola|AG:Antigua and Barbuda|AR:Argentina|AM:Armenia|AU:Australia|AT:Austria|AZ:Azerbaijan|BS:Bahamas|BH:Bahrain|BD:Bangladesh|BB:Barbados|BY:Belarus|BE:Belgium|BZ:Belize|BJ:Benin|BT:Bhutan|BO:Bolivia|BA:Bosnia and Herzegovina|BW:Botswana|BR:Brazil|BN:Brunei|BG:Bulgaria|BF:Burkina Faso|BI:Burundi|CV:Cabo Verde|KH:Cambodia|CM:Cameroon|CA:Canada|CF:Central African Republic|TD:Chad|CL:Chile|CN:China|CO:Colombia|KM:Comoros|CG:Congo|CD:Congo (DRC)|CR:Costa Rica|CI:Côte d'Ivoire|HR:Croatia|CU:Cuba|CY:Cyprus|CZ:Czechia|DK:Denmark|DJ:Djibouti|DM:Dominica|DO:Dominican Republic|EC:Ecuador|EG:Egypt|SV:El Salvador|GQ:Equatorial Guinea|ER:Eritrea|EE:Estonia|SZ:Eswatini|ET:Ethiopia|FJ:Fiji|FI:Finland|FR:France|GA:Gabon|GM:Gambia|GE:Georgia|DE:Germany|GH:Ghana|GR:Greece|GD:Grenada|GT:Guatemala|GN:Guinea|GW:Guinea-Bissau|GY:Guyana|HT:Haiti|HN:Honduras|HK:Hong Kong|HU:Hungary|IS:Iceland|IN:India|ID:Indonesia|IR:Iran|IQ:Iraq|IE:Ireland|IT:Italy|JM:Jamaica|JP:Japan|JO:Jordan|KZ:Kazakhstan|KE:Kenya|KI:Kiribati|XK:Kosovo|KW:Kuwait|KG:Kyrgyzstan|LA:Laos|LV:Latvia|LB:Lebanon|LS:Lesotho|LR:Liberia|LY:Libya|LI:Liechtenstein|LT:Lithuania|LU:Luxembourg|MO:Macau|MG:Madagascar|MW:Malawi|MY:Malaysia|MV:Maldives|ML:Mali|MT:Malta|MH:Marshall Islands|MR:Mauritania|MU:Mauritius|MX:Mexico|FM:Micronesia|MD:Moldova|MC:Monaco|MN:Mongolia|ME:Montenegro|MA:Morocco|MZ:Mozambique|MM:Myanmar|NA:Namibia|NR:Nauru|NP:Nepal|NL:Netherlands|NZ:New Zealand|NI:Nicaragua|NE:Niger|NG:Nigeria|KP:North Korea|MK:North Macedonia|NO:Norway|OM:Oman|PK:Pakistan|PW:Palau|PS:Palestine|PA:Panama|PG:Papua New Guinea|PY:Paraguay|PE:Peru|PH:Philippines|PL:Poland|PT:Portugal|PR:Puerto Rico|QA:Qatar|RO:Romania|RU:Russia|RW:Rwanda|KN:Saint Kitts and Nevis|LC:Saint Lucia|VC:Saint Vincent and the Grenadines|WS:Samoa|SM:San Marino|ST:São Tomé and Príncipe|SA:Saudi Arabia|SN:Senegal|RS:Serbia|SC:Seychelles|SL:Sierra Leone|SG:Singapore|SK:Slovakia|SI:Slovenia|SB:Solomon Islands|SO:Somalia|ZA:South Africa|KR:South Korea|SS:South Sudan|ES:Spain|LK:Sri Lanka|SD:Sudan|SR:Suriname|SE:Sweden|CH:Switzerland|SY:Syria|TW:Taiwan|TJ:Tajikistan|TZ:Tanzania|TH:Thailand|TL:Timor-Leste|TG:Togo|TO:Tonga|TT:Trinidad and Tobago|TN:Tunisia|TR:Türkiye|TM:Turkmenistan|TV:Tuvalu|UG:Uganda|UA:Ukraine|AE:United Arab Emirates|GB:United Kingdom|US:United States|UY:Uruguay|UZ:Uzbekistan|VU:Vanuatu|VA:Vatican City|VE:Venezuela|VN:Vietnam|YE:Yemen|ZM:Zambia|ZW:Zimbabwe")
+  .split("|").map(s=>{const [c,n]=s.split(":");return {c,n}});
+const cNameEn=c=>(COUNTRIES.find(x=>x.c===c)||{n:c}).n;
+const cName=c=>{if(lang==="ar"&&arNames){try{const n=arNames.of(c);if(n&&n!==c)return n}catch(e){}}return cNameEn(c)};
+const flag=c=>c&&c.length===2?String.fromCodePoint(...[...c].map(ch=>127397+ch.charCodeAt(0))):"🌍";
+const EUR="AT BE CY DE EE ES FI FR GR HR IE IT LT LU LV MT NL PT SI SK AD MC SM VA ME XK".split(" ");
+const CUR_MAP={AF:"AFN",AL:"ALL",DZ:"DZD",AO:"AOA",AR:"ARS",AM:"AMD",AZ:"AZN",BY:"BYN",BR:"BRL",BG:"BGN",KH:"KHR",CM:"XAF",CL:"CLP",CO:"COP",CR:"CRC",CZ:"CZK",DK:"DKK",DO:"DOP",ET:"ETB",GE:"GEL",GH:"GHS",GT:"GTQ",HK:"HKD",HU:"HUF",IS:"ISK",IR:"IRR",IQ:"IQD",IL:"ILS",JM:"JMD",KZ:"KZT",KG:"KGS",LB:"LBP",LY:"LYD",MO:"MOP",MV:"MVR",MU:"MUR",MD:"MDL",MN:"MNT",MA:"MAD",MM:"MMK",NO:"NOK",NZ:"NZD",PE:"PEN",PL:"PLN",RO:"RON",RU:"RUB",RS:"RSD",KR:"KRW",SD:"SDG",SE:"SEK",CH:"CHF",SY:"SYP",TW:"TWD",TZ:"TZS",TH:"THB",TN:"TND",UG:"UGX",UA:"UAH",UZ:"UZS",VN:"VND",YE:"YER",ZM:"ZMW",MX:"MXN",TT:"TTD",UY:"UYU",PY:"PYG",BO:"BOB",VE:"VES",KP:"KPW",LA:"LAK",BN:"BND",SC:"SCR",RW:"RWF",SN:"XOF",CI:"XOF",MZ:"MZN",NA:"NAD",BW:"BWP",ZW:"USD",PS:"ILS",QA:"QAR",AE:"AED",SA:"SAR",KW:"KWD",OM:"OMR",BH:"BHD",LK:"LKR",IN:"INR",PK:"PKR",BD:"BDT",PH:"PHP",EG:"EGP",GB:"GBP",US:"USD",CN:"CNY",JP:"JPY",NP:"NPR",MY:"MYR",SG:"SGD",ID:"IDR",TR:"TRY",JO:"JOD",CA:"CAD",AU:"AUD",ZA:"ZAR",NG:"NGN",KE:"KES"};
+const CURS=["USD","QAR","AED","SAR","KWD","OMR","BHD","EUR","GBP","INR","LKR","PKR","BDT","PHP","NPR","EGP","CNY","JPY","MYR","SGD","IDR","TRY","JOD","CAD","AUD","ZAR","NGN","KES"];
+const curFor=c=>CUR_MAP[c]||(EUR.includes(c)?"EUR":"USD");
+
+/* ---------- Language ---------- */
+let lang=(()=>{try{const l=localStorage.getItem("nx_lang");if(l)return l}catch(e){}try{return String(navigator.language||"").toLowerCase().startsWith("ar")?"ar":"en"}catch(e){return "en"}})();
+const AR={"Home":"الرئيسية","My Ads":"إعلاناتي","Post Ad":"أضف إعلان","Plans":"الباقات","Admin":"الإدارة","Search ads in your country…":"ابحث في الإعلانات في بلدك…","Search":"بحث",
+"All categories":"كل الفئات","All ads":"كل الإعلانات","<b>All ads are FREE for now!</b><br>Post as many as you like":"<b>جميع الإعلانات مجانية حالياً!</b><br>أضف ما تشاء من الإعلانات","Each ad stays live {0} days":"يبقى كل إعلان {0} أيام","Post":"أضف",
+"Loading ads in {0}…":"جارٍ تحميل الإعلانات في {0}…","No ads match your search.":"لا توجد إعلانات مطابقة لبحثك.","No ads in {0} yet.":"لا توجد إعلانات في {0} بعد.","Be the first to post":"كن أول من يعلن","Latest in {0}":"الأحدث في {0}","{0} ads":"{0} إعلان","Buy & sell locally, in {0} countries":"بيع واشترِ محلياً في {0} دولة","No photo uploaded":"لا توجد صورة",
+"Expired":"منتهي","{0} day left":"متبقي يوم واحد","{0} days left":"متبقي {0} أيام","{0} hour left":"متبقي ساعة","{0} hours left":"متبقي {0} ساعات","{0} min ago":"منذ {0} دقيقة","{0} h ago":"منذ {0} ساعة","{0} d ago":"منذ {0} يوم","Price on request":"السعر عند الطلب",
+"Free":"مجاني","Post as many ads<br>as you like":"أضف إعلانات<br>بلا حدود","No charges<br>for now":"بدون رسوم<br>حالياً","Days each ad<br>stays live":"أيام بقاء<br>كل إعلان","Posting is free for the time being.":"النشر مجاني في الوقت الحالي.",
+"Sign in to claude.ai to post ads.":"سجّل الدخول لنشر الإعلانات.","Your posting balance":"رصيد النشر","Post a new ad":"أضف إعلاناً جديداً","This ad will appear in {0} only, for {1} days.":"سيظهر هذا الإعلان في {0} فقط لمدة {1} أيام.","Free — no charge.":"مجاناً — بدون رسوم.",
+"Photos (optional, up to {0})":"الصور (اختياري، حتى {0})","Add your own photos, or leave it empty and the category picture will be shown.":"أضف صورك، أو اتركها فارغة وستظهر صورة الفئة.","Title *":"العنوان *","e.g. iPhone 15 Pro, 256GB, like new":"مثال: آيفون 15 برو، 256 جيجا، شبه جديد","Category *":"الفئة *","Price":"السعر","Leave blank = on request":"اتركه فارغاً = عند الطلب","Currency":"العملة","City / Area *":"المدينة / المنطقة *","e.g. Doha, Al Sadd":"مثال: الدوحة، السد","Description *":"الوصف *","Condition, details, delivery…":"الحالة، التفاصيل، التوصيل…","Contact phone / WhatsApp *":"رقم الهاتف / واتساب *","Publish ad":"انشر الإعلان","Publishing…":"جارٍ النشر…","Default":"افتراضية",
+"This photo type can't be read — please choose a JPG or PNG photo":"لا يمكن قراءة هذه الصورة — اختر صورة JPG أو PNG","📷 {0} photo(s) added":"📷 تمت إضافة {0} صورة","Please fill all required fields":"يرجى تعبئة جميع الحقول المطلوبة","✅ Your ad is live for {0} days":"✅ إعلانك منشور لمدة {0} أيام","Couldn't publish, please try again":"تعذّر النشر، حاول مرة أخرى","Couldn't publish — photos may be too large, try fewer":"تعذّر النشر — قد تكون الصور كبيرة، جرّب عدداً أقل",
+"My balance":"رصيدي","+ Post ad":"+ أضف إعلان","My ads ({0})":"إعلاناتي ({0})","You haven't posted any ads yet.":"لم تنشر أي إعلان بعد.","Ads go offline automatically after {0} days.":"تُخفى الإعلانات تلقائياً بعد {0} أيام.","Reposting is free.":"إعادة النشر مجانية.","Live · {0}":"نشط · {0}","Repost":"إعادة نشر","Delete":"حذف","Sign in to claude.ai to see your ads.":"سجّل الدخول لرؤية إعلاناتك.","✅ Reposted for {0} days":"✅ أعيد النشر لمدة {0} أيام",
+"Delete this ad?":"حذف هذا الإعلان؟","“{0}” will be removed permanently.":"سيتم حذف “{0}” نهائياً.","Cancel":"إلغاء","Ad deleted":"تم حذف الإعلان",
+"<b>Posting is FREE for the time being.</b> Post as many ads as you like — no payment needed. Paid plans will start later.":"<b>النشر مجاني في الوقت الحالي.</b> أضف ما تشاء من الإعلانات — دون أي دفع. ستبدأ الباقات المدفوعة لاحقاً.","COMING LATER · STARTER":"قريباً · المبتدئ","{0} free ads per account":"{0} إعلانات مجانية لكل حساب","Each ad live {0} days":"كل إعلان {0} أيام","COMING LATER · COUNTRY PACK":"قريباً · باقة الدولة","{0} posts in one country":"{0} إعلاناً في دولة واحدة","Valid {0} days":"صالحة {0} يوماً",
+"Location":"الموقع","Category":"الفئة","Posted":"تاريخ النشر","Status":"الحالة","Seller":"البائع","Add photos":"إضافة صور","Delete my ad":"حذف إعلاني","Remove ad":"إزالة الإعلان","Hi, I saw your ad on Naa Souq: ":"مرحباً، رأيت إعلانك على Naa Souq: ","Naa Souq seller":"بائع على Naa Souq","Sample listing":"إعلان تجريبي","WhatsApp":"واتساب",
+"Choose your country":"اختر بلدك","Search country…":"ابحث عن بلد…","Showing {0} · prices in {1} — tap the country to change":"عرض {0} · الأسعار بـ {1} — اضغط على الدولة للتغيير",
+"This marketplace needs you to be signed in to claude.ai to load and post ads.":"يجب تسجيل الدخول لعرض الإعلانات ونشرها.","Ads can't be reached yet — showing what's available. They'll appear automatically once connected.":"تعذّر الوصول إلى الإعلانات حالياً — ستظهر تلقائياً عند الاتصال.",
+"Can't connect right now — please check your internet connection and refresh.":"تعذّر الاتصال حالياً — تحقق من الإنترنت وحدّث الصفحة.","Sign in to post your ads — it's free.":"سجّل الدخول لنشر إعلاناتك — مجاناً.","Sign in to see and manage your ads.":"سجّل الدخول لعرض إعلاناتك وإدارتها.","Continue with Google":"المتابعة باستخدام Google","Use email instead":"استخدم البريد الإلكتروني","Sign in":"تسجيل الدخول","or use email":"أو استخدم البريد الإلكتروني","Your name (for new accounts)":"اسمك (للحسابات الجديدة)","Email":"البريد الإلكتروني","Password (6+ characters)":"كلمة المرور (6 أحرف أو أكثر)","Create account":"إنشاء حساب","Forgot password?":"نسيت كلمة المرور؟","Sign-in didn't complete, please try again":"لم يكتمل تسجيل الدخول، حاول مرة أخرى","Enter your email and a password of 6+ characters":"أدخل بريدك وكلمة مرور من 6 أحرف أو أكثر","Account created — check your email to verify it":"تم إنشاء الحساب — تحقق من بريدك لتأكيده","This email already has an account — tap Sign in":"هذا البريد لديه حساب — اضغط تسجيل الدخول","Wrong email or password":"البريد أو كلمة المرور غير صحيحة","Type your email first":"اكتب بريدك أولاً","Password reset email sent":"تم إرسال رسالة إعادة تعيين كلمة المرور","Signed in":"تم تسجيل الدخول","Signed in as {0}":"مسجّل باسم {0}","Sign out":"تسجيل الخروج",
+"My account":"حسابي","✅ Sent for approval — your ad goes live once the admin approves it":"✅ أُرسل للمراجعة — سيُنشر إعلانك بعد موافقة الإدارة","✅ Changes saved — sent for approval again":"✅ تم الحفظ — أُرسل للمراجعة مرة أخرى","Waiting for approval":"بانتظار الموافقة","Not approved":"غير مقبول",
+"Filters":"تصفية","Saved":"المحفوظة","Newest first":"الأحدث أولاً","Price: low to high":"السعر: من الأقل للأعلى","Price: high to low":"السعر: من الأعلى للأقل","Min price":"أقل سعر","Max price":"أعلى سعر","City / Area":"المدينة / المنطقة","Apply":"تطبيق","Clear":"مسح","No saved ads yet — tap the heart on any ad to save it.":"لا توجد إعلانات محفوظة — اضغط على القلب لحفظ أي إعلان.","Sign in to save ads":"سجّل الدخول لحفظ الإعلانات","SOLD":"تم البيع","Terms of use":"شروط الاستخدام","Privacy policy":"سياسة الخصوصية",
+"Your account has been blocked from posting. Contact the site owner if you think this is a mistake.":"تم إيقاف حسابك عن النشر. تواصل مع إدارة الموقع إذا كان ذلك خطأ.","Not allowed: weapons, drugs, alcohol, medicines, counterfeit goods, or anything illegal in your country.":"ممنوع: الأسلحة، المخدرات، الكحول، الأدوية، البضائع المقلدة، أو أي شيء مخالف للقانون في بلدك.","Edit ad":"تعديل الإعلان","Save changes":"حفظ التعديلات","Saving…":"جارٍ الحفظ…","✅ Changes saved":"✅ تم حفظ التعديلات","Couldn't save, please try again":"تعذّر الحفظ، حاول مرة أخرى",
+"{0} of your ads will expire within 24 hours — tap Renew to keep them live for another {1} days.":"{0} من إعلاناتك ستنتهي خلال 24 ساعة — اضغط تجديد لإبقائها {1} أيام أخرى.","Renew":"تجديد","Edit":"تعديل","Marked as sold":"تم وضع علامة مباع","Marked as available":"الإعلان متاح مجدداً","Couldn't update, please try again":"تعذّر التحديث، حاول مرة أخرى","Views":"المشاهدات","Safety tip: meet in a public place and never pay before seeing the item.":"نصيحة أمان: قابل البائع في مكان عام ولا تدفع قبل معاينة المنتج.","Share":"مشاركة","Copy link":"نسخ الرابط","Mark as sold":"تم البيع","Mark as available":"إعادة كمتاح","Report ad":"الإبلاغ عن الإعلان","Link copied":"تم نسخ الرابط","This ad is no longer available":"هذا الإعلان لم يعد متاحاً",
+"Reason":"السبب","Details (optional)":"تفاصيل (اختياري)","Send report":"إرسال البلاغ","Thanks — your report was sent to the admin":"شكراً — تم إرسال بلاغك إلى الإدارة","Couldn't send, please try again":"تعذّر الإرسال، حاول مرة أخرى","Scam or fraud":"احتيال أو نصب","Banned or illegal item":"منتج ممنوع أو غير قانوني","Wrong category":"فئة خاطئة","Duplicate or spam":"مكرر أو مزعج","Offensive content":"محتوى مسيء","Other":"أخرى",
+"Mobile Phones":"الهواتف المحمولة","Computers & Laptops":"الكمبيوتر واللابتوب","Electronics":"الإلكترونيات","Vehicles":"السيارات","Motorcycles":"الدراجات النارية","Auto Parts & Accessories":"قطع غيار وإكسسوارات السيارات","Property":"العقارات","Furniture":"الأثاث","Home & Garden":"المنزل والحديقة","Home Appliances":"الأجهزة المنزلية","Clothes, Shoes & Accessories":"الملابس والأحذية والإكسسوارات","Jewellery & Watches":"المجوهرات والساعات","Health & Beauty":"الصحة والجمال","Kids & Baby":"الأطفال والرضع","Sports":"الرياضة","Gaming":"الألعاب","Books & Education":"الكتب والتعليم","Pets & Animals":"الحيوانات الأليفة","Home Made Food":"طعام منزلي","Food Items":"المواد الغذائية","Services":"الخدمات","Building & Construction":"البناء والتشييد","Industrial & Business Equipment":"المعدات الصناعية والتجارية","Events & Party":"المناسبات والحفلات","Travel & Tours":"السفر والسياحة","Agriculture":"الزراعة","Others":"أخرى"};
+function T(str,...a){let r=(lang==="ar"&&AR[str])||str;a.forEach((v,i)=>{r=r.split("{"+i+"}").join(v)});return r}
+let arNames=null;try{arNames=new Intl.DisplayNames(["ar"],{type:"region"})}catch(e){}
+function applyLang(){document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr"}
+function toggleLang(){lang=lang==="ar"?"en":"ar";try{localStorage.setItem("nx_lang",lang)}catch(e){}applyLang();closeModal();render()}
+applyLang();
+
+/* ---------- Helpers ---------- */
+const $=s=>document.querySelector(s);
+const ic=(n,st)=>`<img class="ico" src="${n}.png" alt=""${st?` style="${st}"`:""}>`;
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function save(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove("on"),2600)}
+const fmtPrice=(p,c)=>(p===""||p==null)?T("Price on request"):`${esc(c||"")} ${Number(p).toLocaleString(undefined,{maximumFractionDigits:2})}`;
+const fmtDate=t=>new Date(t).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"});
+function left(t){const d=t-Date.now();if(d<=0)return T("Expired");const days=Math.floor(d/DAY);if(days>=1)return T(days===1?"{0} day left":"{0} days left",days);const h=Math.ceil(d/36e5);return T(h===1?"{0} hour left":"{0} hours left",h)}
+const ago=t=>{const d=Date.now()-t;if(d<36e5)return T("{0} min ago",Math.max(1,Math.round(d/6e4)));if(d<DAY)return T("{0} h ago",Math.round(d/36e5));return T("{0} d ago",Math.round(d/DAY))};
+
+/* ---------- State ---------- */
+let db=null,user=null,uid=null,isOwner=false,canWrite=true;
+const TZ_MAP={"Asia/Qatar":"QA","Asia/Dubai":"AE","Asia/Riyadh":"SA","Asia/Kuwait":"KW","Asia/Muscat":"OM","Asia/Bahrain":"BH","Asia/Colombo":"LK","Asia/Kolkata":"IN","Asia/Calcutta":"IN","Asia/Karachi":"PK","Asia/Dhaka":"BD","Asia/Manila":"PH","Asia/Kathmandu":"NP","Asia/Katmandu":"NP","Asia/Amman":"JO","Asia/Beirut":"LB","Asia/Baghdad":"IQ","Asia/Tehran":"IR","Asia/Damascus":"SY","Asia/Aden":"YE","Asia/Jerusalem":"IL","Asia/Gaza":"PS","Asia/Hebron":"PS","Asia/Kabul":"AF","Asia/Tashkent":"UZ","Asia/Almaty":"KZ","Asia/Bishkek":"KG","Asia/Baku":"AZ","Asia/Tbilisi":"GE","Asia/Yerevan":"AM","Asia/Shanghai":"CN","Asia/Hong_Kong":"HK","Asia/Macau":"MO","Asia/Taipei":"TW","Asia/Tokyo":"JP","Asia/Seoul":"KR","Asia/Singapore":"SG","Asia/Kuala_Lumpur":"MY","Asia/Jakarta":"ID","Asia/Bangkok":"TH","Asia/Ho_Chi_Minh":"VN","Asia/Saigon":"VN","Asia/Yangon":"MM","Asia/Phnom_Penh":"KH","Asia/Vientiane":"LA","Asia/Ulaanbaatar":"MN","Asia/Thimphu":"BT","Indian/Maldives":"MV","Indian/Mauritius":"MU","Africa/Cairo":"EG","Africa/Casablanca":"MA","Africa/Algiers":"DZ","Africa/Tunis":"TN","Africa/Tripoli":"LY","Africa/Khartoum":"SD","Africa/Lagos":"NG","Africa/Nairobi":"KE","Africa/Accra":"GH","Africa/Addis_Ababa":"ET","Africa/Johannesburg":"ZA","Africa/Kampala":"UG","Africa/Dar_es_Salaam":"TZ","Africa/Kigali":"RW","Africa/Dakar":"SN","Africa/Abidjan":"CI","Africa/Maputo":"MZ","Africa/Luanda":"AO","Africa/Lusaka":"ZM","Africa/Harare":"ZW","Europe/London":"GB","Europe/Dublin":"IE","Europe/Paris":"FR","Europe/Berlin":"DE","Europe/Madrid":"ES","Europe/Rome":"IT","Europe/Amsterdam":"NL","Europe/Brussels":"BE","Europe/Lisbon":"PT","Europe/Vienna":"AT","Europe/Zurich":"CH","Europe/Stockholm":"SE","Europe/Oslo":"NO","Europe/Copenhagen":"DK","Europe/Helsinki":"FI","Europe/Warsaw":"PL","Europe/Prague":"CZ","Europe/Budapest":"HU","Europe/Bucharest":"RO","Europe/Sofia":"BG","Europe/Athens":"GR","Europe/Istanbul":"TR","Europe/Moscow":"RU","Europe/Kiev":"UA","Europe/Kyiv":"UA","Europe/Minsk":"BY","Europe/Belgrade":"RS","Europe/Zagreb":"HR","Europe/Vilnius":"LT","Europe/Riga":"LV","Europe/Tallinn":"EE","Europe/Luxembourg":"LU","Europe/Malta":"MT","Asia/Nicosia":"CY","America/New_York":"US","America/Chicago":"US","America/Denver":"US","America/Los_Angeles":"US","America/Phoenix":"US","America/Anchorage":"US","Pacific/Honolulu":"US","America/Detroit":"US","America/Toronto":"CA","America/Vancouver":"CA","America/Edmonton":"CA","America/Winnipeg":"CA","America/Halifax":"CA","America/Mexico_City":"MX","America/Sao_Paulo":"BR","America/Argentina/Buenos_Aires":"AR","America/Buenos_Aires":"AR","America/Santiago":"CL","America/Bogota":"CO","America/Lima":"PE","America/Caracas":"VE","America/Jamaica":"JM","Australia/Sydney":"AU","Australia/Melbourne":"AU","Australia/Brisbane":"AU","Australia/Perth":"AU","Australia/Adelaide":"AU","Pacific/Auckland":"NZ"};
+function detectCountry(){
+  const ok=c=>c&&COUNTRIES.some(x=>x.c===c);
+  try{const tz=Intl.DateTimeFormat().resolvedOptions().timeZone;if(ok(TZ_MAP[tz]))return TZ_MAP[tz]}catch(e){}
+  try{for(const l of (navigator.languages||[navigator.language])){const m=String(l).match(/[-_]([A-Za-z]{2})$/);if(m&&ok(m[1].toUpperCase()))return m[1].toUpperCase()}}catch(e){}
+  return "QA";
+}
+const savedCountry=load("nx_country");
+let country=savedCountry||detectCountry();
+const autoDetected=!savedCountry;
+let view="home",cat="All",q="";
+let ads=[],myAds=[],acc={},pays=[],myPays=[];
+let status="loading",loadTimer=null,unsubAds=null;
+let draftPhotos=[];
+let favs=new Set(),blocked=new Set(),reports=[],extAds=[],fSort="new",fMin="",fMax="",fCity="",showSaved=false,showFilters=false,editingId=null,pendingAd=null;
+const SITE_URL=String((window.NX_CONFIG&&window.NX_CONFIG.siteUrl)||location.href.split("#")[0]).replace(/\/$/,"/");
+let catPhotos={};
+const catSlug=c=>c.replace(/[^A-Za-z0-9]+/g,"-").toLowerCase();
+const catPic=c=>catPhotos[c]||(BUILTIN.has(c)?""+BUILTIN.get(c)+".jpg":"");
+
+/* ---------- Routing ---------- */
+const VIEWS=["home","post","my","plans","admin"];
+function go(v){if(location.hash!=="#"+v)location.hash=v;else{view=v;render()}}
+window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(h.startsWith("ad-")){view="home";pendingAd=h.slice(3);render();tryPendingAd();return}view=VIEWS.includes(h)?h:"home";if(view!=="post")editingId=null;render();window.scrollTo(0,0)});
+{const h=location.hash.slice(1);if(VIEWS.includes(h))view=h;else if(h.startsWith("ad-"))pendingAd=h.slice(3)}
+async function tryPendingAd(){if(!pendingAd||!db)return;const id=pendingAd;pendingAd=null;await openAdAny(id)}
+async function openAdAny(id){let a=ads.find(x=>x.id===id)||myAds.find(x=>x.id===id)||extAds.find(x=>x.id===id);if(!a&&db){try{const sn=await db.doc("ads/"+id).get();if(sn.exists){a={id,...sn.data()};extAds.push(a)}}catch(e){}}if(a)openAd(id);else toast(T("This ad is no longer available"))}
+
+function doSearch(){q=$("#q").value.trim().toLowerCase();if(view!=="home")go("home");else render()}
+
+/* ---------- Quota logic ---------- */
+function quota(){
+  const now=Date.now();
+  const free=Math.max(0,FREE_ADS-(acc.freeUsed||0));
+  const packActive=(acc.credits||0)>0&&(acc.packExpires||0)>now;
+  return {free,credits:packActive?acc.credits:0,packActive,packCountry:acc.packCountry,packExpires:acc.packExpires};
+}
+function slotFor(c){if(FREE_LAUNCH)return "launch";const k=quota();if(k.free>0)return "free";if(k.packActive&&k.packCountry===c)return "pack";return null}
+async function consume(slot){
+  if(slot==="launch")return;
+  const n={...acc};
+  if(slot==="free")n.freeUsed=(n.freeUsed||0)+1;else n.credits=(n.credits||0)-1;
+  n.updatedAt=Date.now();
+  await db.doc("accounts/"+uid).set(n);
+  acc=n;
+}
+
+/* ---------- Rendering ---------- */
+function renderNav(){
+  const items=[["home","home","Home"],["my","myads","My Ads"],["post","post","Post Ad"],["plans","plans","Plans"]];
+  if(isOwner)items.push(["admin","admin",pendingAds.length?`Admin (${pendingAds.length})`:"Admin"]);
+  $("#nav").innerHTML=items.map(([v,i,t])=>`<a href="#${v}" class="${v===view?"on":""} ${v==="post"?"post":""}"><i><img src="${i}.png" alt=""></i>${T(t)}</a>`).join("");
+  $("#cbtn").innerHTML=`${flag(country)} <span class="cnm">${esc(cName(country))} · </span>${curFor(country)} ▾`;
+  $("#lbtn").textContent=lang==="ar"?"EN":"عربي";{const pb=$("#pbtn");if(pb)pb.textContent="+ "+T("Post Ad");}{const ab=$("#abtn");if(ab)ab.innerHTML=`👤<span class="atx"> ${uid?T("Sign out"):T("Sign in")}</span>`;}$("#q").placeholder=T("Search ads in your country…");$("#qbtn").textContent=T("Search");
+}
+function render(){
+  renderNav();
+  const v=$("#view");
+  if(view==="home")v.innerHTML=homeHTML();
+  else if(view==="post")v.innerHTML=postHTML();
+  else if(view==="my"){v.innerHTML=myHTML();if(window.nxCurrentUser)window.nxCurrentUser().then(u=>{const w=$("#whoami");if(w&&u)w.textContent=T("Signed in as {0}",u.name||u.email)})}
+  else if(view==="plans")v.innerHTML=plansHTML();
+  else if(view==="admin")v.innerHTML=isOwner?adminHTML():`<div class="empty">Admin area is for the site owner.</div>`;
+  if(view==="post")bindPost();
+}
+function statusBanner(){
+  if(status==="nodb")return `<div class="alert err">${T("Can't connect right now — please check your internet connection and refresh.")}</div>`;
+  if(status==="slow")return `<div class="alert">${T("Ads can't be reached yet — showing what's available. They'll appear automatically once connected.")}</div>`;
+  return "";
+}
+function activeAds(list){const now=Date.now();return list.filter(a=>(a.expiresAt||0)>now)}
+function homeHTML(){
+  let list=activeAds(ads);
+  if(cat!=="All")list=list.filter(a=>a.category===cat);
+  if(q)list=list.filter(a=>(a.title+" "+a.description+" "+a.city).toLowerCase().includes(q));
+  list=list.filter(a=>!blocked.has(a.ownerId));
+  if(showSaved)list=list.filter(a=>favs.has(a.id));
+  if(fCity)list=list.filter(a=>(a.city||"").toLowerCase().includes(fCity.toLowerCase()));
+  const pnum=a=>a.price===""||a.price==null?null:Number(a.price);
+  if(fMin!=="")list=list.filter(a=>pnum(a)!=null&&pnum(a)>=Number(fMin));
+  if(fMax!=="")list=list.filter(a=>pnum(a)!=null&&pnum(a)<=Number(fMax));
+  list.sort((a,b)=>{if(!!a.sold!==!!b.sold)return a.sold?1:-1;if(fSort==="low"||fSort==="high"){const x=pnum(a),y=pnum(b);if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;return fSort==="low"?x-y:y-x}return (b.createdAt||0)-(a.createdAt||0)});
+  const k=quota();
+  const fon=fMin!==""||fMax!==""||fCity!=="";
+  const fbar=`<div class="fbar"><button class="chip ${showFilters||fon?"on":""}" onclick="showFilters=!showFilters;render()">⚙️ ${T("Filters")}${fon?" •":""}</button><button class="chip ${showSaved?"on":""}" onclick="showSaved=!showSaved;render()">❤️ ${T("Saved")} (${favs.size})</button><select class="chip" onchange="fSort=this.value;render()"><option value="new" ${fSort==="new"?"selected":""}>${T("Newest first")}</option><option value="low" ${fSort==="low"?"selected":""}>${T("Price: low to high")}</option><option value="high" ${fSort==="high"?"selected":""}>${T("Price: high to low")}</option></select></div>`+(showFilters?`<div class="panel fpanel"><div class="row"><div><label>${T("Min price")}</label><input type="number" id="fmin" min="0" value="${esc(fMin)}"></div><div><label>${T("Max price")}</label><input type="number" id="fmax" min="0" value="${esc(fMax)}"></div></div><label>${T("City / Area")}</label><input type="text" id="fcity" value="${esc(fCity)}" placeholder="${T("e.g. Doha, Al Sadd")}"><div class="acts" style="margin-top:12px"><button class="btn sm" onclick="applyF()">${T("Apply")}</button><button class="btn sec sm" onclick="clearF()">${T("Clear")}</button></div></div>`:"");
+  const chip=([c,i])=>`<button class="chip ${c===cat?"on":""}" onclick="${c==="All"?"openCats()":`setCat('${c}')`}">${c==="All"?`<img src="all.png" alt="" style="border-radius:0;object-fit:contain">`:catPic(c)?`<img src="${catPic(c)}" alt="">`:i+" "}${c==="All"?T("All categories")+" ▾":T(c)}</button>`;
+  const cset=CATS.map(chip).join("");
+  const chips=`<div class="chipfix">${chip(["All","✨"])}</div><div class="marq"><div class="mtrack" style="animation-duration:${CATS.length*4.5}s;animation-delay:-${((Date.now()/1000)%(CATS.length*4.5)).toFixed(2)}s"><div class="mset">${cset}</div><div class="mset" aria-hidden="true">${cset}</div></div></div>`;
+  const promo=`<div class="promo"><img class="bn" src="banner-free.jpg" alt="All ads free"><div><p>${FREE_LAUNCH?T("<b>All ads are FREE for now!</b><br>Post as many as you like"):`Then just <b>$${PACK_PRICE} for ${PACK_POSTS} posts</b>`}<br>${T("Each ad stays live {0} days",AD_DAYS)}</p></div><button class="btn sm" onclick="go('post')">${T("Post")}</button></div>`;
+  let body;
+  if(status==="loading")body=`<div class="empty"><div class="e"><img class="spin" src="loading.png" alt="" style="width:46px"></div>${T("Loading ads in {0}…",esc(cName(country)))}</div>`;
+  else if(!list.length)body=`<div class="empty"><div class="e">${showSaved?"❤️":flag(country)}</div>${showSaved?T("No saved ads yet — tap the heart on any ad to save it."):q||cat!=="All"||fon?T("No ads match your search."):T("No ads in {0} yet.",esc(cName(country)))}<br><br><button class="btn" onclick="go('post')">${T("Be the first to post")}</button></div>`;
+  else body=`<div class="grid">${list.map(cardHTML).join("")}</div>`;
+  return statusBanner()+`<div class="chips">${chips}</div>`+fbar+promo+
+    `<div class="sec-h"><h2>${flag(country)} ${T("Latest in {0}",esc(cName(country)))}</h2><span class="muted">${T("{0} ads",list.length)}</span></div>`+body+
+    `<div class="foot">Naa Souq · ${T("Buy & sell locally, in {0} countries",COUNTRIES.length)}<br><a href="#" onclick="event.preventDefault();openLegal('terms')">${T("Terms of use")}</a> · <a href="#" onclick="event.preventDefault();openLegal('privacy')">${T("Privacy policy")}</a></div>`;
+}
+function cardHTML(a){
+  const own=a.photos&&a.photos[0];const p=own||catPic(a.category);
+  const fv=favs.has(a.id);
+  return `<div class="card ${a.sold?"isSold":""}" onclick="openAd('${esc(a.id)}')">
+    <div class="ph" style="${p?`background-image:url('${p}')`:""}">${p?"":catIcon(a.category)}<span class="tag">${esc(left(a.expiresAt))}</span>${!own&&p?`<span class="stock">${T("No photo uploaded")}</span>`:""}<button class="fav" onclick="event.stopPropagation();toggleFav('${esc(a.id)}')" aria-label="save">${fv?"❤️":"🤍"}</button>${a.sold?`<span class="sold">${T("SOLD")}</span>`:""}</div>
+    <div class="cb"><div class="ttl">${esc(a.title)}</div><div class="price">${fmtPrice(a.price,a.currency)}</div><div class="meta">${ic("location")} ${esc(a.city||cName(a.country))} · ${ago(a.createdAt)}</div></div></div>`;
+}
+function acctBtn(){if(!uid){openSignIn();return}
+  openModal(`<div class="hd"><h3>🚪 ${T("Sign out")}?</h3><button class="x" onclick="closeModal()">✕</button></div><p id="whoami2" class="muted"></p><div class="acts"><button class="btn" onclick="window.nxSignOut&&window.nxSignOut()">${T("Sign out")}</button><button class="btn sec" onclick="closeModal()">${T("Cancel")}</button></div>`);
+  if(window.nxCurrentUser)window.nxCurrentUser().then(u=>{const w=$("#whoami2");if(w&&u)w.textContent=T("Signed in as {0}",u.name||u.email)})}
+function signInBox(msg){return `<div class="panel" style="text-align:center;padding:28px 18px"><img src="mark.png" alt="" style="width:64px"><p style="margin:12px 0 16px">${msg}</p><button class="btn" style="width:100%;max-width:320px" onclick="doGoogle()">G&nbsp; ${T("Continue with Google")}</button><br><br><button class="btn sec" style="width:100%;max-width:320px" onclick="openSignIn(true)">✉️ ${T("Use email instead")}</button></div>`}
+function openSignIn(emailOnly){
+  openModal(`<div class="hd"><h3>${T("Sign in")}</h3><button class="x" onclick="closeModal()">✕</button></div>
+  ${emailOnly?"":`<button class="btn" style="width:100%" onclick="doGoogle()">G&nbsp; ${T("Continue with Google")}</button><p class="note" style="text-align:center;margin:12px 0">${T("or use email")}</p>`}
+  <label>${T("Your name (for new accounts)")}</label><input type="text" id="sname" maxlength="40">
+  <label>${T("Email")}</label><input type="text" id="semail" inputmode="email" autocomplete="email">
+  <label>${T("Password (6+ characters)")}</label><input type="password" id="spass" autocomplete="current-password"><br><br>
+  <div class="acts"><button class="btn" onclick="doEmail(false)">${T("Sign in")}</button><button class="btn sec" onclick="doEmail(true)">${T("Create account")}</button><button class="btn sec sm" onclick="doReset()">${T("Forgot password?")}</button></div>`);
+}
+async function doGoogle(){try{await window.nxSignInGoogle()}catch(e){toast(T("Sign-in didn't complete, please try again"))}}
+async function doEmail(isNew){const e=$("#semail").value.trim(),p=$("#spass").value,n=$("#sname").value.trim();if(!e||p.length<6){toast(T("Enter your email and a password of 6+ characters"));return}
+  try{await window.nxEmailAuth(e,p,isNew,n);if(isNew)toast(T("Account created — check your email to verify it"))}catch(x){const c=(x&&x.code)||"";toast(c.includes("email-already")?T("This email already has an account — tap Sign in"):c.includes("invalid")||c.includes("wrong")||c.includes("not-found")?T("Wrong email or password"):T("Sign-in didn't complete, please try again"))}}
+async function doReset(){const e=$("#semail").value.trim();if(!e){toast(T("Type your email first"));return}try{await window.nxResetPassword(e);toast(T("Password reset email sent"))}catch(x){toast(T("Couldn't send, please try again"))}}
+function applyF(){fMin=$("#fmin").value;fMax=$("#fmax").value;fCity=$("#fcity").value.trim();showFilters=false;render()}
+function clearF(){fMin="";fMax="";fCity="";showFilters=false;render()}
+async function toggleFav(id){
+  if(!uid||!db){openSignIn();return}
+  favs.has(id)?favs.delete(id):favs.add(id);render();
+  try{await db.doc("data/users/"+uid+"/prefs").set({favs:[...favs]})}catch(e){}
+}
+function setCat(c){cat=c;closeModal();render();window.scrollTo(0,0)}
+function openCats(){
+  const tile=(c,img,emo,label)=>`<div class="catup" onclick="setCat('${c}')" style="cursor:pointer;text-align:center;font-size:11.5px"><div class="cimg" style="${img?`background-image:url('${img}');border-style:solid;border-color:${c===cat?"var(--org)":"transparent"}`:c===cat?"border:2px solid var(--org)":""}">${img?"":emo}</div>${label}</div>`;
+  openModal(`<div class="hd"><h3>${T("All categories")}</h3><button class="x" onclick="closeModal()">✕</button></div>
+  <div class="catgrid">${tile("All","all.png","✨",T("All ads"))}${CATS.map(([c,i])=>tile(c,catPic(c),i,T(c))).join("")}</div>`);
+}
+
+function quotaHTML(){
+  if(FREE_LAUNCH)return `<div class="quota"><div class="q"><b>${T("Free")}</b><small>${T("Post as many ads<br>as you like")}</small></div><div class="q"><b>$0</b><small>${T("No charges<br>for now")}</small></div><div class="q"><b>${AD_DAYS}</b><small>${T("Days each ad<br>stays live")}</small></div></div><p class="note">${T("Posting is free for the time being.")}</p>`;
+  const k=quota();
+  const packLine=k.packActive?`Pack for ${flag(k.packCountry)} ${esc(cName(k.packCountry))} · valid until ${fmtDate(k.packExpires)}`:"No active paid pack";
+  return `<div class="quota">
+    <div class="q"><b>${k.free}</b><small>Free ads left<br>(of ${FREE_ADS})</small></div>
+    <div class="q"><b>${k.credits}</b><small>Paid posts left<br>(of ${PACK_POSTS})</small></div>
+    <div class="q"><b>${AD_DAYS}</b><small>Days each ad<br>stays live</small></div>
+  </div><p class="note">${packLine}</p>`;
+}
+function postHTML(){
+  if(status==="nodb")return statusBanner();
+  if(!uid)return signInBox(T("Sign in to post your ads — it's free."));
+  if(uid&&blocked.has(uid))return `<div class="alert err">${T("Your account has been blocked from posting. Contact the site owner if you think this is a mistake.")}</div>`;
+  if(!canWrite)return `<div class="alert err">Your access to this site is view-only, so you can browse but not post. Ask the site owner for posting access.</div>`;
+  const slot=slotFor(country);
+  const k=quota();
+  let gate="";
+  if(!slot){
+    gate=k.packActive
+      ?`<div class="alert err">Your paid pack works only in ${flag(k.packCountry)} <b>${esc(cName(k.packCountry))}</b>. Switch country to post, or buy a pack for ${esc(cName(country))}.<br><br><button class="btn sm" onclick="go('plans')">Buy pack for ${esc(cName(country))}</button></div>`
+      :`<div class="alert err">You've used your ${FREE_ADS} free ads. Get ${PACK_POSTS} more posts for just $${PACK_PRICE}.<br><br><button class="btn sm" onclick="go('plans')">See plans</button></div>`;
+  }
+  return `<div class="panel"><h2>${T("Your posting balance")}</h2>${quotaHTML()}</div>${gate}
+  <form class="panel" id="pform" ${slot?"":"style='opacity:.5;pointer-events:none'"}>
+    <h2>${T("Post a new ad")}</h2>
+    <p class="note" style="margin-top:-4px">${T("This ad will appear in {0} only, for {1} days.",`${flag(country)} <b>${esc(cName(country))}</b>`,AD_DAYS)} ${slot==="launch"?T("Free — no charge."):slot==="free"?"Uses 1 free ad.":slot==="pack"?"Uses 1 paid post.":""}</p>
+    <label>${T("Photos (optional, up to {0})",MAX_PHOTOS)}</label><p class="note" style="margin:-2px 0 6px">${T("Add your own photos, or leave it empty and the category picture will be shown.")}</p>
+    <label class="btn sec" style="display:inline-flex;align-items:center;gap:6px;margin:4px 0 0;font-size:14px;cursor:pointer">${ic("camera")} ${T("Add photos")}<input type="file" id="pfile" accept="image/*" multiple hidden></label>
+    <div class="thumbs" id="pthumbs"></div>
+    <label>${T("Title *")}</label><input type="text" id="ptitle" maxlength="80" required placeholder="${T("e.g. iPhone 15 Pro, 256GB, like new")}">
+    <label>${T("Category *")}</label><select id="pcat" onchange="drawThumbs()">${CATS.map(([c,i])=>`<option value="${c}">${T(c)}</option>`).join("")}</select>
+    <div class="row"><div><label>${T("Price")}</label><input type="number" id="pprice" min="0" step="any" placeholder="${T("Leave blank = on request")}"></div>
+    <div style="flex:.6"><label>${T("Currency")}</label><select id="pcur">${[...new Set([curFor(country),...CURS])].map(c=>`<option ${c===curFor(country)?"selected":""}>${c}</option>`).join("")}</select></div></div>
+    <label>${T("City / Area *")}</label><input type="text" id="pcity" maxlength="60" required placeholder="${T("e.g. Doha, Al Sadd")}">
+    <label>${T("Description *")}</label><textarea id="pdesc" maxlength="2000" required placeholder="${T("Condition, details, delivery…")}"></textarea>
+    <label>${T("Contact phone / WhatsApp *")}</label><input type="tel" id="pphone" maxlength="20" required placeholder="+974 5555 5555" value="${esc(load("nx_phone")||"")}">
+    <p class="note">🚫 ${T("Not allowed: weapons, drugs, alcohol, medicines, counterfeit goods, or anything illegal in your country.")}</p>
+    <br><button class="btn" style="width:100%" id="psubmit" type="submit">${T("Publish ad")}</button>
+  </form>`;
+}
+function bindPost(){
+  const f=$("#pform");if(!f)return;
+  draftPhotos=[];
+  $("#pfile").addEventListener("change",async e=>{
+    for(const file of [...e.target.files]){if(draftPhotos.length>=MAX_PHOTOS)break;try{draftPhotos.push(await compress(file))}catch(err){toast(T("This photo type can't be read — please choose a JPG or PNG photo"))}}
+    if(draftPhotos.length)toast(lang==="ar"?T("📷 {0} photo(s) added",draftPhotos.length):"📷 "+draftPhotos.length+" photo"+(draftPhotos.length>1?"s":"")+" added");
+    e.target.value="";drawThumbs();
+  });
+  f.addEventListener("submit",e=>{e.preventDefault();submitAd()});
+  if(editingId){
+    const e=myAds.find(x=>x.id===editingId)||ads.find(x=>x.id===editingId)||extAds.find(x=>x.id===editingId);
+    if(e){f.style.opacity="";f.style.pointerEvents="";$("#pform h2").textContent=T("Edit ad");$("#ptitle").value=e.title||"";$("#pcat").value=e.category;$("#pprice").value=e.price===""||e.price==null?"":e.price;
+      const cur=$("#pcur");if(![...cur.options].some(o=>o.value===e.currency))cur.insertAdjacentHTML("afterbegin",`<option>${esc(e.currency)}</option>`);cur.value=e.currency;
+      $("#pcity").value=e.city||"";$("#pdesc").value=e.description||"";$("#pphone").value=e.phone||"";draftPhotos=[...(e.photos||[])];$("#psubmit").textContent=T("Save changes");}
+    else editingId=null;
+  }
+  drawThumbs();
+}
+function drawThumbs(){const el=$("#pthumbs");if(!el)return;if(!draftPhotos.length){const c=$("#pcat")?$("#pcat").value:"";const p=catPic(c);el.innerHTML=p?`<div style="background-image:url('${p}')"><span style="position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);color:#fff;font-size:9.5px;text-align:center;border-radius:0 0 10px 10px">${T("Default")}</span></div>`:"";return}el.innerHTML=draftPhotos.map((p,i)=>`<div style="background-image:url('${p}')"><button type="button" onclick="draftPhotos.splice(${i},1);drawThumbs()">✕</button></div>`).join("")}
+function compress(file,m=560){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height;const s=Math.min(1,m/Math.max(w,h));w=Math.round(w*s);h=Math.round(h*s);const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);URL.revokeObjectURL(img.src);res(c.toDataURL("image/jpeg",.6))};img.onerror=()=>rej(new Error("format"));img.src=URL.createObjectURL(file)})}
+async function submitAd(){
+  const t=$("#ptitle").value.trim(),city=$("#pcity").value.trim(),d=$("#pdesc").value.trim(),ph=$("#pphone").value.trim();
+  if(!t||!city||!d||!ph){toast(T("Please fill all required fields"));return}
+  const pr=$("#pprice").value;
+  if(editingId){
+    const btn=$("#psubmit");btn.disabled=true;btn.textContent=T("Saving…");
+    try{await db.doc("ads/"+editingId).update({title:t,category:$("#pcat").value,price:pr===""?"":Number(pr),currency:$("#pcur").value,city,description:d,phone:ph,photos:draftPhotos.slice(0,MAX_PHOTOS),status:isOwner?"approved":"pending"});
+      const e=[...myAds,...ads,...extAds].find(x=>x.id===editingId);if(e)Object.assign(e,{title:t,city,description:d,phone:ph,photos:draftPhotos.slice(0,MAX_PHOTOS)});
+      editingId=null;draftPhotos=[];toast(isOwner?T("✅ Changes saved"):T("✅ Changes saved — sent for approval again"));go("my")}
+    catch(e){btn.disabled=false;btn.textContent=T("Save changes");toast(T("Couldn't save, please try again"))}
+    return;
+  }
+  const slot=slotFor(country);if(!slot){toast("No posts left for this country");return}
+  const btn=$("#psubmit");btn.disabled=true;btn.textContent=T("Publishing…");
+  const now=Date.now();
+  const ad={ownerId:uid,title:t,category:$("#pcat").value,price:pr===""?"":Number(pr),currency:$("#pcur").value,city,description:d,phone:ph,country,photos:draftPhotos.slice(0,MAX_PHOTOS),createdAt:now,expiresAt:now+AD_DAYS*DAY,paid:slot==="pack",status:isOwner?"approved":"pending"};
+  try{
+    await db.collection("ads").add(ad);
+    await consume(slot);
+    save("nx_phone",ph);draftPhotos=[];
+    toast(isOwner?T("✅ Your ad is live for {0} days",AD_DAYS):T("✅ Sent for approval — your ad goes live once the admin approves it"));go("my");
+  }catch(e){
+    btn.disabled=false;btn.textContent=T("Publish ad");
+    if(e&&e.code==="quota_exceeded")toast("Storage is full — please contact the site owner");
+    else if(e&&e.code==="invalid_argument")toast(T("Couldn't publish — photos may be too large, try fewer"));
+    else toast(T("Couldn't publish, please try again"));
+  }
+}
+
+function myHTML(){
+  if(status==="nodb")return statusBanner();
+  if(!uid)return signInBox(T("Sign in to see and manage your ads."));
+  const now=Date.now();
+  const list=[...myAds].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  const soonN=list.filter(a=>(a.expiresAt||0)>now&&(a.expiresAt-now)<DAY).length;
+  const rows=list.map(a=>{const live=(a.expiresAt||0)>now;const soon=live&&(a.expiresAt-now)<DAY;const p=(a.photos&&a.photos[0])||catPic(a.category);
+    return `<div class="it"><div class="im" style="${p?`background-image:url('${p}')`:""}">${p?"":catIcon(a.category)}</div>
+    <div class="tx" style="cursor:pointer" onclick="openAd('${esc(a.id)}')"><b>${esc(a.title)}</b><span class="muted" style="font-size:12px">${flag(a.country)} ${esc(a.city)} · ${fmtPrice(a.price,a.currency)}</span><br>
+    ${a.status==="pending"||!a.status?`<span class="pill y">⏳ ${T("Waiting for approval")}</span>`:a.status==="rejected"?`<span class="pill r">${T("Not approved")}${a.rejectReason?": "+esc(a.rejectReason):""}</span>`:live?`<span class="pill ${soon?"y":"g"}">${T("Live · {0}",left(a.expiresAt))}</span>`:`<span class="pill r">${T("Expired")}</span>`} ${a.sold?`<span class="pill g">${T("SOLD")}</span>`:""} <span class="muted" style="font-size:11px">👁 ${a.views||0}</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px">${!live||soon?`<button class="btn sm" onclick="repost('${esc(a.id)}')">${live?T("Renew"):T("Repost")}</button>`:""}<button class="btn sec sm" onclick="startEdit('${esc(a.id)}')">${T("Edit")}</button><button class="btn sec sm" onclick="delAd('${esc(a.id)}')">${T("Delete")}</button></div></div>`}).join("");
+  return `<div class="panel" style="display:flex;align-items:center;gap:10px;padding:12px 16px"><span style="flex:1" id="whoami">${T("Signed in")}</span><button class="btn sec sm" onclick="nxSignOut()">${T("Sign out")}</button></div>${soonN?`<div class="alert">⏰ ${T("{0} of your ads will expire within 24 hours — tap Renew to keep them live for another {1} days.",soonN,AD_DAYS)}</div>`:""}<div class="panel"><h2>${T("My balance")}</h2>${quotaHTML()}<div class="acts" style="margin-top:10px"><button class="btn sm" onclick="go('post')">${T("+ Post ad")}</button>${FREE_LAUNCH?"":`<button class="btn sec sm" onclick="go('plans')">Buy ${PACK_POSTS} posts · $${PACK_PRICE}</button>`}</div></div>
+  <div class="panel"><h2>${T("My ads ({0})",list.length)}</h2>${list.length?`<div class="list">${rows}</div>`:`<div class="empty" style="padding:20px">${T("You haven't posted any ads yet.")}</div>`}
+  <p class="note">${T("Ads go offline automatically after {0} days.",AD_DAYS)} ${FREE_LAUNCH?T("Reposting is free."):"Reposting an expired ad uses one post from your balance."}</p></div>`;
+}
+function startEdit(id){editingId=id;closeModal();if(view==="post")render();else go("post")}
+async function toggleSold(id){const a=[...myAds,...ads,...extAds].find(x=>x.id===id);if(!a)return;try{await db.doc("ads/"+id).update({sold:!a.sold});a.sold=!a.sold;toast(a.sold?T("Marked as sold"):T("Marked as available"));openAd(id);render()}catch(e){toast(T("Couldn't update, please try again"))}}
+async function repost(id){
+  const a=myAds.find(x=>x.id===id);if(!a)return;
+  const slot=slotFor(a.country);
+  if(!slot){toast("No posts left for "+cName(a.country));go("plans");return}
+  try{const now=Date.now();await db.doc("ads/"+id).update({createdAt:now,expiresAt:now+AD_DAYS*DAY,paid:slot==="pack"});await consume(slot);toast(T("✅ Reposted for {0} days",AD_DAYS))}catch(e){toast("Couldn't repost, try again")}
+}
+let pendingDel=null;
+function delAd(id){
+  const a=[...myAds,...ads].find(x=>x.id===id);
+  openModal(`<div class="hd"><h3>${T("Delete this ad?")}</h3><button class="x" onclick="closeModal()">✕</button></div><p>${T("“{0}” will be removed permanently.",esc(a?a.title:""))}</p><div class="acts"><button class="btn" onclick="confirmDel('${esc(id)}')">${T("Delete")}</button><button class="btn sec" onclick="closeModal()">${T("Cancel")}</button></div>`);
+}
+async function confirmDel(id){try{await db.doc("ads/"+id).delete();closeModal();toast(T("Ad deleted"))}catch(e){toast("Couldn't delete")}}
+
+function plansHTML(){
+  const k=quota();
+  const myPending=myPays.filter(p=>p.status==="pending");
+  const reqs=[...myPays].sort((a,b)=>b.createdAt-a.createdAt).map(p=>`<div class="it"><div class="im"><img src="payment.png" alt="" style="width:40px"></div><div class="tx"><b>${PACK_POSTS} posts · ${flag(p.country)} ${esc(cName(p.country))}</b><span class="muted" style="font-size:12px">${esc(p.method)} · ref ${esc(p.reference)} · ${fmtDate(p.createdAt)}</span></div>${p.status==="approved"?`<span class="pill g">Active</span>`:p.status==="rejected"?`<span class="pill r">Rejected</span>`:`<span class="pill y">Pending</span>`}</div>`).join("");
+  if(FREE_LAUNCH)return `<div class="alert ok">${T("<b>Posting is FREE for the time being.</b> Post as many ads as you like — no payment needed. Paid plans will start later.")}</div>
+  <div class="plans" style="opacity:.6"><div class="plan"><div class="muted" style="font-weight:600">${T("COMING LATER · STARTER")}</div><div class="pr">${T("Free")}</div><ul><li>${T("{0} free ads per account",FREE_ADS)}</li><li>${T("Each ad live {0} days",AD_DAYS)}</li></ul></div>
+  <div class="plan"><div class="muted" style="font-weight:600">${T("COMING LATER · COUNTRY PACK")}</div><div class="pr">$${PACK_PRICE} <small>≈ QAR ${(PACK_PRICE*USD_QAR).toFixed(2)}</small></div><ul><li>${T("{0} posts in one country",PACK_POSTS)}</li><li>${T("Valid {0} days",PACK_DAYS)}</li></ul></div></div>`;
+  return `<div class="plans">
+    <div class="plan"><div class="muted" style="font-weight:600">STARTER</div><div class="pr">Free</div><ul><li>${FREE_ADS} free ads per account</li><li>Any country</li><li>Each ad live ${AD_DAYS} days</li></ul><p class="note">You have <b>${k.free}</b> free ads left.</p></div>
+    <div class="plan hot"><div style="color:var(--org);font-weight:700">COUNTRY PACK ${ic("star")}</div><div class="pr">$${PACK_PRICE} <small>≈ QAR ${(PACK_PRICE*USD_QAR).toFixed(2)}</small></div><ul><li><b>${PACK_POSTS} posts</b></li><li>Valid <b>${PACK_DAYS} days</b> from activation</li><li>Works in <b>one country</b> (the one you choose)</li><li>Each ad live ${AD_DAYS} days</li></ul><p class="note">${k.packActive?`Active: <b>${k.credits}</b> posts left for ${esc(cName(k.packCountry))} until ${fmtDate(k.packExpires)}`:"No active pack."}</p></div>
+  </div>
+  ${uid&&canWrite&&status!=="nodb"?`<form class="panel" id="payform" onsubmit="event.preventDefault();requestPack()" style="margin-top:12px">
+    <h2>Buy a Country Pack</h2>
+    <div class="alert">Online card payment is not available yet. Pay <b>$${PACK_PRICE}</b> (≈ QAR ${(PACK_PRICE*USD_QAR).toFixed(2)}) locally — cash, bank transfer or mobile wallet — then send your payment reference below. The admin activates your ${PACK_POSTS} posts after confirming.</div>
+    <label>Country for this pack</label><select id="paycountry">${COUNTRIES.map(c=>`<option value="${c.c}" ${c.c===country?"selected":""}>${flag(c.c)} ${esc(c.n)}</option>`).join("")}</select>
+    <label>Payment method</label><select id="paymethod"><option>Cash</option><option>Bank transfer</option><option>Mobile wallet</option></select>
+    <label>Payment reference / receipt no. *</label><input type="text" id="payref" maxlength="60" required placeholder="e.g. TRX-20491">
+    <label>Your phone *</label><input type="tel" id="payphone" maxlength="20" required value="${esc(load("nx_phone")||"")}">
+    <br><button class="btn" style="width:100%" ${myPending.length?"disabled":""}>${myPending.length?"Request pending — waiting for admin":"Send payment request"}</button>
+  </form>`:status==="nodb"?statusBanner():`<div class="alert err" style="margin-top:12px">Sign in with posting access to buy a pack.</div>`}
+  ${myPays.length?`<div class="panel"><h2>My payment requests</h2><div class="list">${reqs}</div></div>`:""}`;
+}
+async function requestPack(){
+  const ref=$("#payref").value.trim(),ph=$("#payphone").value.trim();
+  if(!ref||!ph){toast("Fill in reference and phone");return}
+  try{await db.collection("payments").add({uid,country:$("#paycountry").value,method:$("#paymethod").value,reference:ref,phone:ph,amountUSD:PACK_PRICE,status:"pending",createdAt:Date.now()});save("nx_phone",ph);toast("✅ Request sent — admin will activate your pack")}
+  catch(e){toast("Couldn't send request, try again")}
+}
+
+let adStats=null,statsBusy=false,pendingAds=[],legacyAds=[];
+function loadStats(){if(statsBusy||!db)return;statsBusy=true;db.collection("ads").get().then(sn=>{const now=Date.now(),m={};legacyAds=[];sn.docs.forEach(d=>{const a=d.data()||{};if(!a.status)legacyAds.push({id:d.id,...a});const c=a.country||"??";if(!m[c])m[c]={total:0,live:0,sellers:new Set()};m[c].total++;if((a.expiresAt||0)>now&&a.status==="approved")m[c].live++;if(a.ownerId)m[c].sellers.add(a.ownerId)});adStats=m;statsBusy=false;if(view==="admin")render()}).catch(()=>{statsBusy=false})}
+function approvalHTML(){
+  const list=[...pendingAds,...legacyAds.filter(x=>!pendingAds.some(p=>p.id===x.id))].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+  return `<div class="panel" style="border:2px solid ${list.length?"var(--org)":"transparent"}"><h2>⏳ Ads waiting for approval (${list.length})</h2>${list.length?`<div class="list">${list.map(a=>{const p=(a.photos&&a.photos[0])||catPic(a.category);return `<div class="it"><div class="im" style="${p?`background-image:url('${p}')`:""}"></div><div class="tx" style="cursor:pointer" onclick="openAdAny('${esc(a.id)}')"><b>${esc(a.title)}</b><span class="muted" style="font-size:12px">${flag(a.country)} ${esc(a.city)} · ${fmtPrice(a.price,a.currency)} · ${esc(a.category)}</span><br><span class="muted" style="font-size:12px">${esc((a.description||"").slice(0,90))}</span></div><div style="display:flex;flex-direction:column;gap:6px"><button class="btn okb sm" onclick="approveAd('${esc(a.id)}')">Approve</button><button class="btn sec sm" onclick="rejectAd('${esc(a.id)}')">Reject</button></div></div>`}).join("")}</div>`:`<p class="muted">Nothing waiting. ${ic("party")}</p>`}<p class="note">Tap an ad to see its photos and full details before deciding. Approved ads go live for ${AD_DAYS} days from approval.</p></div>`}
+async function approveAd(id){try{const now=Date.now();await db.doc("ads/"+id).update({status:"approved",createdAt:now,expiresAt:now+AD_DAYS*DAY,rejectReason:""});legacyAds=legacyAds.filter(x=>x.id!==id);closeModal();toast("✅ Ad approved — it's live now");render()}catch(e){toast("Couldn't approve, try again")}}
+function rejectAd(id){openModal(`<div class="hd"><h3>Reject this ad?</h3><button class="x" onclick="closeModal()">✕</button></div><label>Reason (the seller will see it)</label><select id="rjr"><option>Banned or illegal item</option><option>Wrong category</option><option>Unclear or missing details</option><option>Duplicate or spam</option><option>Offensive content</option><option>Other</option></select><br><br><div class="acts"><button class="btn" onclick="doReject('${esc(id)}')">Reject</button><button class="btn sec" onclick="closeModal()">Cancel</button></div>`)}
+async function doReject(id){try{await db.doc("ads/"+id).update({status:"rejected",rejectReason:$("#rjr").value});legacyAds=legacyAds.filter(x=>x.id!==id);closeModal();toast("Ad rejected");render()}catch(e){toast("Couldn't update, try again")}}
+function statsHTML(){if(!adStats){loadStats();return `<div class="panel"><h2>🌍 Ads by country</h2><p class="muted">Loading…</p></div>`}
+  const rows=Object.entries(adStats).sort((a,b)=>b[1].total-a[1].total);
+  return `<div class="panel"><h2>🌍 Ads by country</h2>${rows.length?`<table class="stat"><tr><th>Country</th><th>Live ads</th><th>All ads</th><th>Sellers</th></tr>${rows.map(([c,v])=>`<tr><td>${flag(c)} ${esc(cName(c))}</td><td><b>${v.live}</b></td><td>${v.total}</td><td>${v.sellers.size}</td></tr>`).join("")}</table>`:`<p class="muted">No ads yet.</p>`}<p class="note">Based on the country each ad was posted in. <a href="#" onclick="event.preventDefault();adStats=null;render()">Refresh</a></p></div>`}
+function adminHTML(){
+  const pend=pays.filter(p=>p.status==="pending").sort((a,b)=>a.createdAt-b.createdAt);
+  const done=pays.filter(p=>p.status!=="pending").sort((a,b)=>b.createdAt-a.createdAt).slice(0,30);
+  const rev=pays.filter(p=>p.status==="approved").length*PACK_PRICE;
+  const row=(p,act)=>`<div class="it"><div class="im"><img src="payment.png" alt="" style="width:40px"></div><div class="tx"><b>${flag(p.country)} ${esc(cName(p.country))} · $${p.amountUSD||PACK_PRICE}</b><span class="muted" style="font-size:12px">${esc(p.method)} · ref <b>${esc(p.reference)}</b> · ${ic("phone")} ${esc(p.phone)} · ${fmtDate(p.createdAt)}</span></div>${act?`<div style="display:flex;flex-direction:column;gap:6px"><button class="btn okb sm" onclick="approve('${esc(p.id)}')">Approve</button><button class="btn sec sm" onclick="reject('${esc(p.id)}')">Reject</button></div>`:p.status==="approved"?`<span class="pill g">Approved</span>`:`<span class="pill r">Rejected</span>`}</div>`;
+  return `<div class="quota" style="margin-bottom:12px"><div class="q"><b>${pend.length}</b><small>Pending payments</small></div><div class="q"><b>${activeAds(ads).length}</b><small>Live ads in ${esc(cName(country))}</small></div><div class="q"><b>$${rev}</b><small>Approved revenue<br>≈ QAR ${(rev*USD_QAR).toFixed(2)}</small></div></div>
+  ${approvalHTML()}
+  ${statsHTML()}
+  <div class="panel"><h2>Pending payment requests</h2>${pend.length?`<div class="list">${pend.map(p=>row(p,true)).join("")}</div>`:`<p class="muted">Nothing waiting. ${ic("party")}</p>`}<p class="note">Approve only after you've received the money. Approving gives the user ${PACK_POSTS} posts for that country, valid ${PACK_DAYS} days.</p></div>
+  <div class="panel"><h2>Recent decisions</h2>${done.length?`<div class="list">${done.map(p=>row(p,false)).join("")}</div>`:`<p class="muted">None yet.</p>`}</div>
+  <div class="panel"><h2>🚩 Reported ads (${reports.length})</h2>${reports.length?`<div class="list">${[...reports].sort((a,b)=>b.createdAt-a.createdAt).map(r=>`<div class="it"><div class="tx"><b style="cursor:pointer" onclick="openAdAny('${esc(r.adId)}')">${esc(r.title||r.adId)}</b><span class="muted" style="font-size:12px">${esc(r.reason)}${r.note?" — "+esc(r.note):""} · ${flag(r.country)} · ${fmtDate(r.createdAt)}</span></div><div style="display:flex;flex-direction:column;gap:6px"><button class="btn sm" onclick="removeReported('${esc(r.reporter)}',${Number(r.createdAt)},'${esc(r.adId)}')">Remove ad</button>${r.ownerId&&r.ownerId!=="demo"?`<button class="btn sec sm" onclick="blockSeller('${esc(r.ownerId)}')">Block seller</button>`:""}<button class="btn sec sm" onclick="dismissReport('${esc(r.reporter)}',${Number(r.createdAt)})">Dismiss</button></div></div>`).join("")}</div>`:`<p class="muted">No reports. ${ic("party")}</p>`}</div>
+  ${blocked.size?`<div class="panel"><h2>Blocked sellers (${blocked.size})</h2><div class="list">${[...blocked].map(b=>`<div class="it"><div class="tx"><b>Seller ${esc(b.slice(0,8))}…</b></div><button class="btn sec sm" onclick="unblock('${esc(b)}')">Unblock</button></div>`).join("")}</div></div>`:""}
+  <div class="panel"><h2>Category pictures</h2><p class="note" style="margin:-4px 0 12px">Tap a category to replace its photo. It shows on the category buttons and on ads that have no photo of their own.</p>
+  <div class="catgrid">${CATS.map(([c,i])=>`<label class="catup"><div class="cimg" style="${catPic(c)?`background-image:url('${catPic(c)}');border-style:solid;border-color:transparent`:""}">${catPic(c)?"":i}</div>${c}<input type="file" accept="image/*" hidden onchange="uploadCat('${c}',this)"></label>`).join("")}</div></div>
+  <p class="note">Tip: open any ad to add photos to it or remove it.</p>`;
+}
+async function approve(id){
+  const p=pays.find(x=>x.id===id);if(!p)return;
+  try{
+    const ref=db.doc("accounts/"+p.uid);const s=await ref.get();const a=s.exists?{...s.data()}:{};
+    const now=Date.now();const carry=((a.credits||0)>0&&(a.packExpires||0)>now&&a.packCountry===p.country)?a.credits:0;
+    await ref.set({...a,credits:carry+PACK_POSTS,packCountry:p.country,packExpires:now+PACK_DAYS*DAY,updatedAt:now});
+    await db.doc("payments/"+id).update({status:"approved",decidedAt:now});
+    toast("✅ Pack activated");
+  }catch(e){toast("Couldn't approve, try again")}
+}
+async function reject(id){try{await db.doc("payments/"+id).update({status:"rejected",decidedAt:Date.now()});toast("Request rejected")}catch(e){toast("Couldn't update")}}
+
+/* ---------- Ad detail ---------- */
+async function openAd(id){
+  const a=ads.find(x=>x.id===id)||myAds.find(x=>x.id===id)||extAds.find(x=>x.id===id);if(!a)return;
+  const ph=(a.photos&&a.photos.length)?a.photos:(catPic(a.category)?[catPic(a.category)]:[]);
+  const ownN=(a.photos||[]).length;
+  const digits=String(a.phone||"").replace(/[^\d]/g,"");
+  const mine=a.ownerId===uid;
+  openModal(`<div class="hd"><h3>${esc(a.title)}</h3><button class="x" onclick="closeModal()">✕</button></div>
+   <div class="gal" id="gal" style="${ph[0]?`background-image:url('${ph[0]}')`:""}">${ph[0]?"":catIcon(a.category)}</div>
+   ${ph.length>1?`<div class="gthumbs">${ph.map((p,i)=>`<div class="${i?"":"on"}" style="background-image:url('${p}')" onclick="showPh(this,${i})"></div>`).join("")}</div>`:""}
+   <div class="price" style="font-size:22px;margin-top:10px">${fmtPrice(a.price,a.currency)}</div>
+   <div class="kv"><span>${T("Location")}</span><span>${flag(a.country)} ${esc(a.city)}, ${esc(cName(a.country))}</span><span>${T("Category")}</span><span>${catIcon(a.category)} ${esc(T(a.category))}</span><span>${T("Posted")}</span><span>${fmtDate(a.createdAt)}</span><span>${T("Status")}</span><span>${a.sold?`<b style="color:var(--ok)">${T("SOLD")}</b> · `:""}${esc(left(a.expiresAt))}</span><span>${T("Views")}</span><span>${a.views||0}</span><span>${T("Seller")}</span><span id="seller">…</span></div>
+   <div class="desc">${esc(a.description)}</div>
+   <div class="alert" style="font-size:12.5px">🛡️ ${T("Safety tip: meet in a public place and never pay before seeing the item.")}</div>
+   <div class="acts">
+     ${digits?`<a class="btn okb" style="text-decoration:none" href="https://wa.me/${digits}?text=${encodeURIComponent(T("Hi, I saw your ad on Naa Souq: ")+a.title)}" target="_blank" rel="noopener">${ic("whatsapp")} ${T("WhatsApp")}</a>`:""}
+     <span class="btn sec" style="cursor:text">${ic("phone")} ${esc(a.phone)}</span>
+     ${(mine||isOwner)&&ownN<MAX_PHOTOS?`<label class="btn sec" style="display:inline-block;margin:0;font-size:14px">${ic("camera")} ${T("Add photos")}<input type="file" accept="image/*" multiple hidden onchange="addPhotos('${esc(a.id)}',this)"></label>`:""}
+     <a class="btn sec" style="text-decoration:none" href="https://wa.me/?text=${encodeURIComponent(a.title+" — "+(a.price===""||a.price==null?T("Price on request"):a.currency+" "+a.price)+"\n"+SITE_URL+"#ad-"+a.id)}" target="_blank" rel="noopener">📤 ${T("Share")}</a>
+     <button class="btn sec" onclick="copyLink('${esc(a.id)}')">🔗 ${T("Copy link")}</button>
+     ${mine?`<button class="btn sec" onclick="startEdit('${esc(a.id)}')">✏️ ${T("Edit")}</button><button class="btn sec" onclick="toggleSold('${esc(a.id)}')">${a.sold?T("Mark as available"):"✅ "+T("Mark as sold")}</button>`:""}
+     ${mine||isOwner?`<button class="btn sec" onclick="delAd('${esc(a.id)}')">${mine?T("Delete my ad"):T("Remove ad")}</button>`:""}
+     ${isOwner&&a.status!=="approved"?`<button class="btn okb" onclick="approveAd('${esc(a.id)}')">✅ Approve</button><button class="btn sec" onclick="rejectAd('${esc(a.id)}')">Reject</button>`:""}
+     ${!mine&&uid?`<button class="btn sec" style="color:#c42a05" onclick="openReport('${esc(a.id)}')">🚩 ${T("Report ad")}</button>`:""}
+   </div>`);
+  window._gal=ph;
+  try{if(db&&canWrite&&uid&&a.ownerId!==uid&&a.ownerId!=="demo"){const k="nx_v_"+id;let seen=false;try{seen=sessionStorage.getItem(k)}catch(e){}if(!seen){try{sessionStorage.setItem(k,"1")}catch(e){}a.views=(a.views||0)+1;db.doc("ads/"+id).update({views:a.views}).catch(()=>{})}}}catch(e){}
+  let name=T("Naa Souq seller");
+  if(a.ownerId==="demo")name=T("Sample listing");
+  else if(user&&a.ownerId){try{const ps=await user.profiles([a.ownerId]);name=(ps&&ps[a.ownerId]&&ps[a.ownerId].name)||T("Naa Souq seller")}catch(e){}}
+  const s=$("#seller");if(s)s.textContent=name;
+}
+async function addPhotos(id,input){
+  const a=ads.find(x=>x.id===id)||myAds.find(x=>x.id===id);if(!a)return;
+  const photos=[...(a.photos||[])];
+  let bad=0;for(const f of [...input.files]){if(photos.length>=MAX_PHOTOS)break;try{photos.push(await compress(f))}catch(e){bad++}}
+  if(photos.length===(a.photos||[]).length){toast(bad?T("This photo type can't be read — please choose a JPG or PNG photo"):"No photo selected");return}
+  input.value="";
+  try{await db.doc("ads/"+id).update({photos});a.photos=photos;toast("✅ Photos added");openAd(id)}catch(e){toast("Couldn't save photos — try a smaller picture")}
+}
+async function uploadCat(c,input){
+  const f=input.files[0];input.value="";if(!f)return;
+  try{const photo=await compress(f,480);await db.doc("catphotos/"+catSlug(c)).set({cat:c,photo,updatedAt:Date.now()});toast("✅ Picture saved for "+c)}catch(e){toast("Couldn't save picture")}
+}
+async function copyLink(id){try{await navigator.clipboard.writeText(SITE_URL+"#ad-"+id);toast(T("Link copied"))}catch(e){toast(SITE_URL+"#ad-"+id)}}
+const REASONS=["Scam or fraud","Banned or illegal item","Wrong category","Duplicate or spam","Offensive content","Other"];
+function openReport(id){
+  const a=[...ads,...myAds,...extAds].find(x=>x.id===id);
+  openModal(`<div class="hd"><h3>🚩 ${T("Report ad")}</h3><button class="x" onclick="closeModal()">✕</button></div><p class="muted" style="margin:0 0 6px">${esc(a?a.title:"")}</p>
+  <label>${T("Reason")}</label><select id="rreason">${REASONS.map(r=>`<option value="${r}">${T(r)}</option>`).join("")}</select>
+  <label>${T("Details (optional)")}</label><textarea id="rnote" maxlength="500"></textarea><br><br>
+  <div class="acts"><button class="btn" onclick="sendReport('${esc(id)}')">${T("Send report")}</button><button class="btn sec" onclick="closeModal()">${T("Cancel")}</button></div>`);
+}
+async function sendReport(id){
+  const a=[...ads,...myAds,...extAds].find(x=>x.id===id);
+  try{const ref=db.doc("reports/"+uid);const sn=await ref.get();const items=sn.exists&&Array.isArray(sn.data().items)?[...sn.data().items]:[];
+    items.push({adId:id,title:a?a.title:"",ownerId:a?a.ownerId:"",country:a?a.country:"",reason:$("#rreason").value,note:$("#rnote").value.trim().slice(0,500),createdAt:Date.now()});
+    await ref.set({items:items.slice(-30)});closeModal();toast(T("Thanks — your report was sent to the admin"))}
+  catch(e){toast(T("Couldn't send, please try again"))}
+}
+async function dismissReport(reporter,at){try{const ref=db.doc("reports/"+reporter);const sn=await ref.get();if(sn.exists){await ref.set({items:(sn.data().items||[]).filter(r=>r.createdAt!==at)})}toast("Report dismissed")}catch(e){toast("Couldn't update")}}
+async function removeReported(reporter,at,adId){try{await db.doc("ads/"+adId).delete()}catch(e){}await dismissReport(reporter,at);toast("Ad removed")}
+async function blockSeller(ownerId){if(!ownerId||ownerId==="demo")return;try{await db.doc("blocked/"+ownerId).set({at:Date.now()});toast("Seller blocked — they can no longer post")}catch(e){toast("Couldn't block")}}
+async function unblock(id){try{await db.doc("blocked/"+id).delete();toast("Seller unblocked")}catch(e){toast("Couldn't update")}}
+function openLegal(which){
+  const terms=`<h4>1. About Naa Souq</h4>Naa Souq is a free classified-ads website where people post items and services for sale in their own country. Naa Souq is not a party to any sale and does not handle payments between buyers and sellers.
+<h4>2. Your ads</h4>You are responsible for your ads. They must be truthful, in the right category, and legal in your country. Each ad stays live for ${AD_DAYS} days.
+<h4>3. Not allowed</h4>Weapons, drugs, alcohol, medicines, counterfeit or stolen goods, adult content, and anything illegal in your country. Scams, spam and duplicate ads are not allowed.
+<h4>4. Removal</h4>We may remove any ad or block any account that breaks these rules, without notice.
+<h4>5. Safety</h4>Meet in public places, check items before paying, and never send money in advance. Naa Souq is not responsible for deals made between users.
+<h4>6. Changes</h4>These terms may change. Using the site means you accept the current terms.`;
+  const privacy=`<h4>What we collect</h4>The ads you post (text, photos, price, city), the contact phone number you add to an ad, and your account ID.
+<h4>How it is used</h4>To show your ads to buyers in your country and to let them contact you. Your phone number is shown on your ads so buyers can call or WhatsApp you.
+<h4>What we don't do</h4>We do not sell your data. Saved ads are visible only to you.
+<h4>Your choices</h4>You can edit or delete your ads at any time. Ask the site owner to delete your account data.
+<h4>Device storage</h4>The site remembers your country and language on your device.`;
+  openModal(`<div class="hd"><h3>${which==="terms"?T("Terms of use"):T("Privacy policy")}</h3><button class="x" onclick="closeModal()">✕</button></div><div class="legal" dir="ltr" style="text-align:left">${which==="terms"?terms:privacy}</div>`);
+}
+function showPh(el,i){$("#gal").style.backgroundImage=`url('${window._gal[i]}')`;document.querySelectorAll(".gthumbs div").forEach(d=>d.classList.remove("on"));el.classList.add("on")}
+
+/* ---------- Country picker ---------- */
+function openCountry(){
+  openModal(`<div class="hd"><h3>${T("Choose your country")}</h3><button class="x" onclick="closeModal()">✕</button></div>
+  <input type="text" id="csearch" placeholder="${T("Search country…")}" oninput="drawCountries()" autocomplete="off"><div class="clist" id="clist"></div>`);
+  drawCountries();
+}
+function drawCountries(){
+  const s=($("#csearch").value||"").toLowerCase();
+  $("#clist").innerHTML=COUNTRIES.map(c=>({c:c.c,n:cName(c.c),en:c.n})).filter(c=>c.n.toLowerCase().includes(s)||c.en.toLowerCase().includes(s)).sort((a,b)=>a.n.localeCompare(b.n,lang)).map(c=>`<div class="${c.c===country?"on":""}" onclick="setCountry('${c.c}')"><span style="font-size:20px">${flag(c.c)}</span>${esc(c.n)}</div>`).join("");
+}
+function setCountry(c){country=c;save("nx_country",c);closeModal();cat="All";subscribeAds();render()}
+
+function openModal(h){$("#sheet").innerHTML=h;$("#modal").classList.add("open")}
+function closeModal(){$("#modal").classList.remove("open")}
+
+/* ---------- Data ---------- */
+function startTimer(){clearTimeout(loadTimer);loadTimer=setTimeout(()=>{if(status==="loading"){status="slow";if(view==="home")render()}},10000)}
+function subscribeAds(){
+  if(!db)return;
+  if(unsubAds)unsubAds();
+  ads=[];status="loading";startTimer();
+  unsubAds=db.collection("ads").where("country","==",country).where("status","==","approved").onSnapshot(s=>{
+    ads=s.docs.map(d=>({id:d.id,...d.data()}));
+    if(!s.metadata.fromCache){status="ready";clearTimeout(loadTimer)}else if(status==="loading")status="ready";
+    if(view==="home"||view==="admin")render();
+    if(pendingAd)tryPendingAd();
+  },e=>{status="slow";clearTimeout(loadTimer);if(view==="home")render()});
+}
+function softRender(){if(view==="home"||view==="my"||view==="admin")render();else if(view==="plans")render();else if(view==="post"){const p=$(".panel .quota");if(p)p.parentElement.innerHTML="<h2>Your posting balance</h2>"+quotaHTML()}}
+
+try{if("serviceWorker" in navigator&&window.top===window.self&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}
+(async()=>{
+  render();
+  if(autoDetected)setTimeout(()=>toast(`${flag(country)} `+T("Showing {0} · prices in {1} — tap the country to change",cName(country),curFor(country))),600);
+  if(!(window.claude&&claude.use)){status="nodb";render();return}
+  startTimer();
+  [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
+  if(!db){status="nodb";render();return}
+  if(user){
+    try{uid=await user.id()}catch(e){}
+    try{isOwner=!!(await user.isOwner())}catch(e){}
+    try{const w=await user.can("data.write");if(w===false)canWrite=false}catch(e){}
+  }
+  subscribeAds();
+  db.collection("blocked").onSnapshot(sn=>{blocked=new Set(sn.docs.map(d=>d.id));if(view==="home"||view==="admin"||view==="post")render()},()=>{});
+  db.collection("catphotos").onSnapshot(s=>{const m={};s.docs.forEach(d=>{const x=d.data();if(x&&x.cat&&x.photo)m[x.cat]=x.photo});catPhotos=m;if(view==="home"||view==="admin")render()},()=>{});
+  if(uid){
+    db.collection("ads").where("ownerId","==",uid).onSnapshot(s=>{myAds=s.docs.map(d=>({id:d.id,...d.data()}));if(view==="my")render()},()=>{});
+    db.doc("data/users/"+uid+"/prefs").onSnapshot(sn=>{const d=sn.exists?sn.data():{};favs=new Set(Array.isArray(d.favs)?d.favs:[]);if(view==="home")render()},()=>{});
+    if(isOwner)db.collection("ads").where("status","==","pending").onSnapshot(sn=>{pendingAds=sn.docs.map(d=>({id:d.id,...d.data()}));renderNav();if(view==="admin")render()},()=>{});
+    if(isOwner)db.collection("reports").onSnapshot(sn=>{reports=sn.docs.flatMap(d=>((d.data()||{}).items||[]).map(r=>({...r,reporter:d.id})));if(view==="admin")render()},()=>{});
+    db.doc("accounts/"+uid).onSnapshot(s=>{acc=s.exists?{...s.data()}:{};softRender()},()=>{});
+    const pq=isOwner?db.collection("payments"):db.collection("payments").where("uid","==",uid);
+    pq.onSnapshot(s=>{const all=s.docs.map(d=>({id:d.id,...d.data()}));if(isOwner)pays=all;myPays=all.filter(p=>p.uid===uid);if(view==="plans"||view==="admin")render()},()=>{});
+  }
+  render();
+})();
+</script>
+</body>
+</html>
