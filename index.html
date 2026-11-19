@@ -150,17 +150,30 @@ select.chip{width:auto;padding:6px 12px;border-radius:999px}
 .legal h4{margin:12px 0 4px}
 .foot{text-align:center;color:var(--mut);font-size:11.5px;margin-top:24px}
 </style>
+<style>
+/* Header option A: big logo | short, slim search | country + language */
+.top{flex-wrap:wrap;max-width:1280px}
+.logo img{height:70px!important}
+.top .search{flex:1;max-width:480px;margin:0;margin-inline-start:auto;border-width:1px}
+.top .search input{padding:5px 14px;font-size:13px;line-height:1.3}
+.top .search button{padding:0 14px;font-size:13px}
+.hbtns{display:flex;gap:6px;align-items:center}
+.hbtns .cbtn{margin-inline-start:0!important}
+@media(max-width:760px){.atx{display:none}}
+@media(max-width:480px){.cnm{display:none}.logo img{height:44px!important}.hbtns{gap:4px}.hbtns .cbtn{padding:5px 8px!important}}
+@media(max-width:760px){.logo img{height:48px!important}.top{flex-wrap:wrap;gap:6px}.hbtns .cbtn{font-size:12px;padding:5px 9px}.hbtns{margin-inline-start:auto}.top{flex-wrap:wrap}.logo{flex:none}.hbtns{flex-wrap:nowrap}.top .search{order:5;flex-basis:88%;max-width:88%;margin:6px auto 0}.top .search input{padding:3px 12px;font-size:12px}.top .search button{padding:0 12px;font-size:12px}}
+</style>
 </head>
 <body>
 <header>
   <div class="top">
     <div class="logo" onclick="go('home')"><img src="logo-full.png" alt="Naa Souq"></div>
-    <button class="cbtn" id="cbtn" onclick="openCountry()"></button><button class="cbtn lbtn" id="lbtn" onclick="toggleLang()">عربي</button>
+    <form class="search" onsubmit="event.preventDefault();doSearch()">
+      <input id="q" type="text" placeholder="Search ads in your country…" autocomplete="off">
+      <button type="submit" id="qbtn">Search</button>
+    </form>
+    <div class="hbtns"><button class="cbtn" id="cbtn" onclick="openCountry()"></button><button class="cbtn lbtn" id="lbtn" onclick="toggleLang()">عربي</button><button class="cbtn lbtn" id="abtn" onclick="acctBtn()">👤</button></div>
   </div>
-  <form class="search" onsubmit="event.preventDefault();doSearch()">
-    <input id="q" type="text" placeholder="Search ads in your country…" autocomplete="off">
-    <button type="submit" id="qbtn">Search</button>
-  </form>
 </header>
 <main id="view"></main>
 <nav><div class="in" id="nav"></div></nav>
@@ -281,8 +294,8 @@ function renderNav(){
   const items=[["home","home","Home"],["my","myads","My Ads"],["post","post","Post Ad"],["plans","plans","Plans"]];
   if(isOwner)items.push(["admin","admin","Admin"]);
   $("#nav").innerHTML=items.map(([v,i,t])=>`<a href="#${v}" class="${v===view?"on":""} ${v==="post"?"post":""}"><i><img src="${i}.png" alt=""></i>${T(t)}</a>`).join("");
-  $("#cbtn").innerHTML=`${flag(country)} ${esc(cName(country))} · ${curFor(country)} ▾`;
-  $("#lbtn").textContent=lang==="ar"?"EN":"عربي";$("#q").placeholder=T("Search ads in your country…");$("#qbtn").textContent=T("Search");
+  $("#cbtn").innerHTML=`${flag(country)} <span class="cnm">${esc(cName(country))} · </span>${curFor(country)} ▾`;
+  $("#lbtn").textContent=lang==="ar"?"EN":"عربي";{const ab=$("#abtn");if(ab)ab.innerHTML=`👤<span class="atx"> ${uid?T("Sign out"):T("Sign in")}</span>`;}$("#q").placeholder=T("Search ads in your country…");$("#qbtn").textContent=T("Search");
 }
 function render(){
   renderNav();
@@ -331,6 +344,9 @@ function cardHTML(a){
     <div class="ph" style="${p?`background-image:url('${p}')`:""}">${p?"":catIcon(a.category)}<span class="tag">${esc(left(a.expiresAt))}</span>${!own&&p?`<span class="stock">${T("No photo uploaded")}</span>`:""}<button class="fav" onclick="event.stopPropagation();toggleFav('${esc(a.id)}')" aria-label="save">${fv?"❤️":"🤍"}</button>${a.sold?`<span class="sold">${T("SOLD")}</span>`:""}</div>
     <div class="cb"><div class="ttl">${esc(a.title)}</div><div class="price">${fmtPrice(a.price,a.currency)}</div><div class="meta">${ic("location")} ${esc(a.city||cName(a.country))} · ${ago(a.createdAt)}</div></div></div>`;
 }
+function acctBtn(){if(!uid){openSignIn();return}
+  openModal(`<div class="hd"><h3>👤 ${T("Sign out")}?</h3><button class="x" onclick="closeModal()">✕</button></div><p id="whoami2" class="muted"></p><div class="acts"><button class="btn" onclick="window.nxSignOut&&window.nxSignOut()">${T("Sign out")}</button><button class="btn sec" onclick="closeModal()">${T("Cancel")}</button></div>`);
+  if(window.nxCurrentUser)window.nxCurrentUser().then(u=>{const w=$("#whoami2");if(w&&u)w.textContent=T("Signed in as {0}",u.name||u.email)})}
 function signInBox(msg){return `<div class="panel" style="text-align:center;padding:28px 18px"><img src="mark.png" alt="" style="width:64px"><p style="margin:12px 0 16px">${msg}</p><button class="btn" style="width:100%;max-width:320px" onclick="doGoogle()">G&nbsp; ${T("Continue with Google")}</button><br><br><button class="btn sec" style="width:100%;max-width:320px" onclick="openSignIn(true)">✉️ ${T("Use email instead")}</button></div>`}
 function openSignIn(emailOnly){
   openModal(`<div class="hd"><h3>${T("Sign in")}</h3><button class="x" onclick="closeModal()">✕</button></div>
