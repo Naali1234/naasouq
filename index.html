@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Naa Souq</title>
-<link rel="icon" href="icons/mark.png">
+<link rel="icon" href="mark.png">
 <link rel="manifest" href="manifest.json">
 <script src="config.js"></script>
 <script type="module" src="firebase-adapter.js"></script>
 <meta name="theme-color" content="#e62e04">
 <meta name="description" content="Naa Souq — buy and sell locally in your country. Free ads.">
-<link rel="apple-touch-icon" href="icons/app-192.png">
+<link rel="apple-touch-icon" href="app-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Naa Souq">
@@ -154,7 +154,7 @@ select.chip{width:auto;padding:6px 12px;border-radius:999px}
 <body>
 <header>
   <div class="top">
-    <div class="logo" onclick="go('home')"><img src="icons/logo-full.png" alt="Naa Souq"></div>
+    <div class="logo" onclick="go('home')"><img src="logo-full.png" alt="Naa Souq"></div>
     <button class="cbtn" id="cbtn" onclick="openCountry()"></button><button class="cbtn lbtn" id="lbtn" onclick="toggleLang()">عربي</button>
   </div>
   <form class="search" onsubmit="event.preventDefault();doSearch()">
@@ -217,7 +217,7 @@ applyLang();
 
 /* ---------- Helpers ---------- */
 const $=s=>document.querySelector(s);
-const ic=(n,st)=>`<img class="ico" src="icons/${n}.png" alt=""${st?` style="${st}"`:""}>`;
+const ic=(n,st)=>`<img class="ico" src="${n}.png" alt=""${st?` style="${st}"`:""}>`;
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function save(k,v){try{localStorage.setItem(k,v)}catch(e){}}
@@ -247,7 +247,7 @@ let favs=new Set(),blocked=new Set(),reports=[],extAds=[],fSort="new",fMin="",fM
 const SITE_URL=String((window.NX_CONFIG&&window.NX_CONFIG.siteUrl)||location.href.split("#")[0]).replace(/\/$/,"/");
 let catPhotos={};
 const catSlug=c=>c.replace(/[^A-Za-z0-9]+/g,"-").toLowerCase();
-const catPic=c=>catPhotos[c]||(BUILTIN.has(c)?"cats/"+BUILTIN.get(c)+".jpg":"");
+const catPic=c=>catPhotos[c]||(BUILTIN.has(c)?""+BUILTIN.get(c)+".jpg":"");
 
 /* ---------- Routing ---------- */
 const VIEWS=["home","post","my","plans","admin"];
@@ -280,7 +280,7 @@ async function consume(slot){
 function renderNav(){
   const items=[["home","home","Home"],["my","myads","My Ads"],["post","post","Post Ad"],["plans","plans","Plans"]];
   if(isOwner)items.push(["admin","admin","Admin"]);
-  $("#nav").innerHTML=items.map(([v,i,t])=>`<a href="#${v}" class="${v===view?"on":""} ${v==="post"?"post":""}"><i><img src="icons/${i}.png" alt=""></i>${T(t)}</a>`).join("");
+  $("#nav").innerHTML=items.map(([v,i,t])=>`<a href="#${v}" class="${v===view?"on":""} ${v==="post"?"post":""}"><i><img src="${i}.png" alt=""></i>${T(t)}</a>`).join("");
   $("#cbtn").innerHTML=`${flag(country)} ${esc(cName(country))} · ${curFor(country)} ▾`;
   $("#lbtn").textContent=lang==="ar"?"EN":"عربي";$("#q").placeholder=T("Search ads in your country…");$("#qbtn").textContent=T("Search");
 }
@@ -314,10 +314,10 @@ function homeHTML(){
   const k=quota();
   const fon=fMin!==""||fMax!==""||fCity!=="";
   const fbar=`<div class="fbar"><button class="chip ${showFilters||fon?"on":""}" onclick="showFilters=!showFilters;render()">⚙️ ${T("Filters")}${fon?" •":""}</button><button class="chip ${showSaved?"on":""}" onclick="showSaved=!showSaved;render()">❤️ ${T("Saved")} (${favs.size})</button><select class="chip" onchange="fSort=this.value;render()"><option value="new" ${fSort==="new"?"selected":""}>${T("Newest first")}</option><option value="low" ${fSort==="low"?"selected":""}>${T("Price: low to high")}</option><option value="high" ${fSort==="high"?"selected":""}>${T("Price: high to low")}</option></select></div>`+(showFilters?`<div class="panel fpanel"><div class="row"><div><label>${T("Min price")}</label><input type="number" id="fmin" min="0" value="${esc(fMin)}"></div><div><label>${T("Max price")}</label><input type="number" id="fmax" min="0" value="${esc(fMax)}"></div></div><label>${T("City / Area")}</label><input type="text" id="fcity" value="${esc(fCity)}" placeholder="${T("e.g. Doha, Al Sadd")}"><div class="acts" style="margin-top:12px"><button class="btn sm" onclick="applyF()">${T("Apply")}</button><button class="btn sec sm" onclick="clearF()">${T("Clear")}</button></div></div>`:"");
-  const chips=[["All","✨"],...CATS].map(([c,i])=>`<button class="chip ${c===cat?"on":""}" onclick="${c==="All"?"openCats()":`setCat('${c}')`}">${c==="All"?`<img src="icons/all.png" alt="" style="border-radius:0;object-fit:contain">`:catPic(c)?`<img src="${catPic(c)}" alt="">`:i+" "}${c==="All"?T("All categories")+" ▾":T(c)}</button>`).join("");
-  const promo=`<div class="promo"><img class="bn" src="icons/banner-free.jpg" alt="All ads free"><div><p>${FREE_LAUNCH?T("<b>All ads are FREE for now!</b><br>Post as many as you like"):`Then just <b>$${PACK_PRICE} for ${PACK_POSTS} posts</b>`}<br>${T("Each ad stays live {0} days",AD_DAYS)}</p></div><button class="btn sm" onclick="go('post')">${T("Post")}</button></div>`;
+  const chips=[["All","✨"],...CATS].map(([c,i])=>`<button class="chip ${c===cat?"on":""}" onclick="${c==="All"?"openCats()":`setCat('${c}')`}">${c==="All"?`<img src="all.png" alt="" style="border-radius:0;object-fit:contain">`:catPic(c)?`<img src="${catPic(c)}" alt="">`:i+" "}${c==="All"?T("All categories")+" ▾":T(c)}</button>`).join("");
+  const promo=`<div class="promo"><img class="bn" src="banner-free.jpg" alt="All ads free"><div><p>${FREE_LAUNCH?T("<b>All ads are FREE for now!</b><br>Post as many as you like"):`Then just <b>$${PACK_PRICE} for ${PACK_POSTS} posts</b>`}<br>${T("Each ad stays live {0} days",AD_DAYS)}</p></div><button class="btn sm" onclick="go('post')">${T("Post")}</button></div>`;
   let body;
-  if(status==="loading")body=`<div class="empty"><div class="e"><img class="spin" src="icons/loading.png" alt="" style="width:46px"></div>${T("Loading ads in {0}…",esc(cName(country)))}</div>`;
+  if(status==="loading")body=`<div class="empty"><div class="e"><img class="spin" src="loading.png" alt="" style="width:46px"></div>${T("Loading ads in {0}…",esc(cName(country)))}</div>`;
   else if(!list.length)body=`<div class="empty"><div class="e">${showSaved?"❤️":flag(country)}</div>${showSaved?T("No saved ads yet — tap the heart on any ad to save it."):q||cat!=="All"||fon?T("No ads match your search."):T("No ads in {0} yet.",esc(cName(country)))}<br><br><button class="btn" onclick="go('post')">${T("Be the first to post")}</button></div>`;
   else body=`<div class="grid">${list.map(cardHTML).join("")}</div>`;
   return statusBanner()+`<div class="chips">${chips}</div>`+fbar+promo+
@@ -331,7 +331,7 @@ function cardHTML(a){
     <div class="ph" style="${p?`background-image:url('${p}')`:""}">${p?"":catIcon(a.category)}<span class="tag">${esc(left(a.expiresAt))}</span>${!own&&p?`<span class="stock">${T("No photo uploaded")}</span>`:""}<button class="fav" onclick="event.stopPropagation();toggleFav('${esc(a.id)}')" aria-label="save">${fv?"❤️":"🤍"}</button>${a.sold?`<span class="sold">${T("SOLD")}</span>`:""}</div>
     <div class="cb"><div class="ttl">${esc(a.title)}</div><div class="price">${fmtPrice(a.price,a.currency)}</div><div class="meta">${ic("location")} ${esc(a.city||cName(a.country))} · ${ago(a.createdAt)}</div></div></div>`;
 }
-function signInBox(msg){return `<div class="panel" style="text-align:center;padding:28px 18px"><img src="icons/mark.png" alt="" style="width:64px"><p style="margin:12px 0 16px">${msg}</p><button class="btn" style="width:100%;max-width:320px" onclick="doGoogle()">G&nbsp; ${T("Continue with Google")}</button><br><br><button class="btn sec" style="width:100%;max-width:320px" onclick="openSignIn(true)">✉️ ${T("Use email instead")}</button></div>`}
+function signInBox(msg){return `<div class="panel" style="text-align:center;padding:28px 18px"><img src="mark.png" alt="" style="width:64px"><p style="margin:12px 0 16px">${msg}</p><button class="btn" style="width:100%;max-width:320px" onclick="doGoogle()">G&nbsp; ${T("Continue with Google")}</button><br><br><button class="btn sec" style="width:100%;max-width:320px" onclick="openSignIn(true)">✉️ ${T("Use email instead")}</button></div>`}
 function openSignIn(emailOnly){
   openModal(`<div class="hd"><h3>${T("Sign in")}</h3><button class="x" onclick="closeModal()">✕</button></div>
   ${emailOnly?"":`<button class="btn" style="width:100%" onclick="doGoogle()">G&nbsp; ${T("Continue with Google")}</button><p class="note" style="text-align:center;margin:12px 0">${T("or use email")}</p>`}
@@ -355,7 +355,7 @@ function setCat(c){cat=c;closeModal();render();window.scrollTo(0,0)}
 function openCats(){
   const tile=(c,img,emo,label)=>`<div class="catup" onclick="setCat('${c}')" style="cursor:pointer;text-align:center;font-size:11.5px"><div class="cimg" style="${img?`background-image:url('${img}');border-style:solid;border-color:${c===cat?"var(--org)":"transparent"}`:c===cat?"border:2px solid var(--org)":""}">${img?"":emo}</div>${label}</div>`;
   openModal(`<div class="hd"><h3>${T("All categories")}</h3><button class="x" onclick="closeModal()">✕</button></div>
-  <div class="catgrid">${tile("All","icons/all.png","✨",T("All ads"))}${CATS.map(([c,i])=>tile(c,catPic(c),i,T(c))).join("")}</div>`);
+  <div class="catgrid">${tile("All","all.png","✨",T("All ads"))}${CATS.map(([c,i])=>tile(c,catPic(c),i,T(c))).join("")}</div>`);
 }
 
 function quotaHTML(){
@@ -481,7 +481,7 @@ async function confirmDel(id){try{await db.doc("ads/"+id).delete();closeModal();
 function plansHTML(){
   const k=quota();
   const myPending=myPays.filter(p=>p.status==="pending");
-  const reqs=[...myPays].sort((a,b)=>b.createdAt-a.createdAt).map(p=>`<div class="it"><div class="im"><img src="icons/payment.png" alt="" style="width:40px"></div><div class="tx"><b>${PACK_POSTS} posts · ${flag(p.country)} ${esc(cName(p.country))}</b><span class="muted" style="font-size:12px">${esc(p.method)} · ref ${esc(p.reference)} · ${fmtDate(p.createdAt)}</span></div>${p.status==="approved"?`<span class="pill g">Active</span>`:p.status==="rejected"?`<span class="pill r">Rejected</span>`:`<span class="pill y">Pending</span>`}</div>`).join("");
+  const reqs=[...myPays].sort((a,b)=>b.createdAt-a.createdAt).map(p=>`<div class="it"><div class="im"><img src="payment.png" alt="" style="width:40px"></div><div class="tx"><b>${PACK_POSTS} posts · ${flag(p.country)} ${esc(cName(p.country))}</b><span class="muted" style="font-size:12px">${esc(p.method)} · ref ${esc(p.reference)} · ${fmtDate(p.createdAt)}</span></div>${p.status==="approved"?`<span class="pill g">Active</span>`:p.status==="rejected"?`<span class="pill r">Rejected</span>`:`<span class="pill y">Pending</span>`}</div>`).join("");
   if(FREE_LAUNCH)return `<div class="alert ok">${T("<b>Posting is FREE for the time being.</b> Post as many ads as you like — no payment needed. Paid plans will start later.")}</div>
   <div class="plans" style="opacity:.6"><div class="plan"><div class="muted" style="font-weight:600">${T("COMING LATER · STARTER")}</div><div class="pr">${T("Free")}</div><ul><li>${T("{0} free ads per account",FREE_ADS)}</li><li>${T("Each ad live {0} days",AD_DAYS)}</li></ul></div>
   <div class="plan"><div class="muted" style="font-weight:600">${T("COMING LATER · COUNTRY PACK")}</div><div class="pr">$${PACK_PRICE} <small>≈ QAR ${(PACK_PRICE*USD_QAR).toFixed(2)}</small></div><ul><li>${T("{0} posts in one country",PACK_POSTS)}</li><li>${T("Valid {0} days",PACK_DAYS)}</li></ul></div></div>`;
@@ -511,7 +511,7 @@ function adminHTML(){
   const pend=pays.filter(p=>p.status==="pending").sort((a,b)=>a.createdAt-b.createdAt);
   const done=pays.filter(p=>p.status!=="pending").sort((a,b)=>b.createdAt-a.createdAt).slice(0,30);
   const rev=pays.filter(p=>p.status==="approved").length*PACK_PRICE;
-  const row=(p,act)=>`<div class="it"><div class="im"><img src="icons/payment.png" alt="" style="width:40px"></div><div class="tx"><b>${flag(p.country)} ${esc(cName(p.country))} · $${p.amountUSD||PACK_PRICE}</b><span class="muted" style="font-size:12px">${esc(p.method)} · ref <b>${esc(p.reference)}</b> · ${ic("phone")} ${esc(p.phone)} · ${fmtDate(p.createdAt)}</span></div>${act?`<div style="display:flex;flex-direction:column;gap:6px"><button class="btn okb sm" onclick="approve('${esc(p.id)}')">Approve</button><button class="btn sec sm" onclick="reject('${esc(p.id)}')">Reject</button></div>`:p.status==="approved"?`<span class="pill g">Approved</span>`:`<span class="pill r">Rejected</span>`}</div>`;
+  const row=(p,act)=>`<div class="it"><div class="im"><img src="payment.png" alt="" style="width:40px"></div><div class="tx"><b>${flag(p.country)} ${esc(cName(p.country))} · $${p.amountUSD||PACK_PRICE}</b><span class="muted" style="font-size:12px">${esc(p.method)} · ref <b>${esc(p.reference)}</b> · ${ic("phone")} ${esc(p.phone)} · ${fmtDate(p.createdAt)}</span></div>${act?`<div style="display:flex;flex-direction:column;gap:6px"><button class="btn okb sm" onclick="approve('${esc(p.id)}')">Approve</button><button class="btn sec sm" onclick="reject('${esc(p.id)}')">Reject</button></div>`:p.status==="approved"?`<span class="pill g">Approved</span>`:`<span class="pill r">Rejected</span>`}</div>`;
   return `<div class="quota" style="margin-bottom:12px"><div class="q"><b>${pend.length}</b><small>Pending payments</small></div><div class="q"><b>${activeAds(ads).length}</b><small>Live ads in ${esc(cName(country))}</small></div><div class="q"><b>$${rev}</b><small>Approved revenue<br>≈ QAR ${(rev*USD_QAR).toFixed(2)}</small></div></div>
   <div class="panel"><h2>Pending payment requests</h2>${pend.length?`<div class="list">${pend.map(p=>row(p,true)).join("")}</div>`:`<p class="muted">Nothing waiting. ${ic("party")}</p>`}<p class="note">Approve only after you've received the money. Approving gives the user ${PACK_POSTS} posts for that country, valid ${PACK_DAYS} days.</p></div>
   <div class="panel"><h2>Recent decisions</h2>${done.length?`<div class="list">${done.map(p=>row(p,false)).join("")}</div>`:`<p class="muted">None yet.</p>`}</div>
