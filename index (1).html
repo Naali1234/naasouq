@@ -148,6 +148,18 @@ select.chip{width:auto;padding:6px 12px;border-radius:999px}
 .foot a{color:var(--mut)}
 .legal{font-size:13px;line-height:1.6;max-height:60vh;overflow:auto}
 .legal h4{margin:12px 0 4px}
+@media(min-width:1300px){.grid{grid-template-columns:repeat(6,1fr)!important}}
+@media(min-width:1600px){.grid{grid-template-columns:repeat(7,1fr)!important}}
+.chips{align-items:center}
+.chipfix{flex:none}
+.marq{flex:1;min-width:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent);mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent)}
+.mtrack{display:flex;width:max-content;animation:mq 80s linear infinite}
+.mset{display:flex;gap:8px;padding-inline-end:8px}
+.marq:hover .mtrack,.marq:active .mtrack,.marq:focus-within .mtrack{animation-play-state:paused}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+html[dir=rtl] .mtrack{animation-name:mqr}
+@keyframes mqr{from{transform:translateX(0)}to{transform:translateX(50%)}}
+@media(prefers-reduced-motion:reduce){.mtrack{animation:none}.marq{overflow-x:auto}}
 .foot{text-align:center;color:var(--mut);font-size:11.5px;margin-top:24px}
 </style>
 <style>
@@ -162,6 +174,26 @@ select.chip{width:auto;padding:6px 12px;border-radius:999px}
 @media(max-width:760px){.atx{display:none}}
 @media(max-width:480px){.cnm{display:none}.logo img{height:44px!important}.hbtns{gap:4px}.hbtns .cbtn{padding:5px 8px!important}}
 @media(max-width:760px){.logo img{height:48px!important}.top{flex-wrap:wrap;gap:6px}.hbtns .cbtn{font-size:12px;padding:5px 9px}.hbtns{margin-inline-start:auto}.top{flex-wrap:wrap}.logo{flex:none}.hbtns{flex-wrap:nowrap}.top .search{order:5;flex-basis:88%;max-width:88%;margin:6px auto 0}.top .search input{padding:3px 12px;font-size:12px}.top .search button{padding:0 12px;font-size:12px}}
+@media(max-width:420px){.cfull{display:none}.logo img{height:40px!important}}
+.top .search{height:34px;box-sizing:border-box}
+.top .search input{padding-top:0;padding-bottom:0}
+.hbtns .cbtn{height:34px;box-sizing:border-box;padding:0 13px;font-size:13px;line-height:1}
+.pbtn{display:none!important;background:#fff!important;color:var(--red)!important;font-weight:700;border-color:#fff!important}
+@media(min-width:900px){
+ nav{top:100px;bottom:auto;left:12px;right:auto;width:104px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:6px 0}
+ nav .in{flex-direction:column;max-width:none}
+ nav a{padding:12px 4px;font-size:12px;border-radius:12px;margin:0 6px}
+ nav a.on{background:#fff3ec}
+ nav a i img{width:30px;height:30px}
+ nav a.post i img{width:36px;height:36px;margin-top:0}
+ main{padding-left:130px;padding-right:20px;padding-bottom:40px;max-width:1700px}
+ .top{max-width:1700px!important}
+ .pbtn{display:flex!important}#toast{bottom:30px}}
+@media(max-width:760px){.top .search{height:30px}.hbtns .cbtn{height:30px;padding:0 10px;font-size:12px}}
+.amenu a,.amenu button{display:flex;align-items:center;gap:12px;width:100%;padding:13px 6px;border:0;border-bottom:1px solid var(--line);background:none;font-size:15px;text-decoration:none;color:var(--ink);cursor:pointer;text-align:start}
+.amenu img{width:26px;height:26px;object-fit:contain}
+.stat td,.stat th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:start;font-size:13px}
+.stat{width:100%;border-collapse:collapse}
 </style>
 </head>
 <body>
@@ -172,7 +204,7 @@ select.chip{width:auto;padding:6px 12px;border-radius:999px}
       <input id="q" type="text" placeholder="Search ads in your country…" autocomplete="off">
       <button type="submit" id="qbtn">Search</button>
     </form>
-    <div class="hbtns"><button class="cbtn" id="cbtn" onclick="openCountry()"></button><button class="cbtn lbtn" id="lbtn" onclick="toggleLang()">عربي</button><button class="cbtn lbtn" id="abtn" onclick="acctBtn()">👤</button></div>
+    <div class="hbtns"><button class="cbtn" id="cbtn" onclick="openCountry()"></button><button class="cbtn lbtn" id="lbtn" onclick="toggleLang()">عربي</button><button class="cbtn pbtn" onclick="go('post')" id="pbtn">+ Post Ad</button><button class="cbtn lbtn" id="abtn" onclick="acctBtn()">👤</button></div>
   </div>
 </header>
 <main id="view"></main>
@@ -217,6 +249,7 @@ const AR={"Home":"الرئيسية","My Ads":"إعلاناتي","Post Ad":"أض�
 "Choose your country":"اختر بلدك","Search country…":"ابحث عن بلد…","Showing {0} · prices in {1} — tap the country to change":"عرض {0} · الأسعار بـ {1} — اضغط على الدولة للتغيير",
 "This marketplace needs you to be signed in to claude.ai to load and post ads.":"يجب تسجيل الدخول لعرض الإعلانات ونشرها.","Ads can't be reached yet — showing what's available. They'll appear automatically once connected.":"تعذّر الوصول إلى الإعلانات حالياً — ستظهر تلقائياً عند الاتصال.",
 "Can't connect right now — please check your internet connection and refresh.":"تعذّر الاتصال حالياً — تحقق من الإنترنت وحدّث الصفحة.","Sign in to post your ads — it's free.":"سجّل الدخول لنشر إعلاناتك — مجاناً.","Sign in to see and manage your ads.":"سجّل الدخول لعرض إعلاناتك وإدارتها.","Continue with Google":"المتابعة باستخدام Google","Use email instead":"استخدم البريد الإلكتروني","Sign in":"تسجيل الدخول","or use email":"أو استخدم البريد الإلكتروني","Your name (for new accounts)":"اسمك (للحسابات الجديدة)","Email":"البريد الإلكتروني","Password (6+ characters)":"كلمة المرور (6 أحرف أو أكثر)","Create account":"إنشاء حساب","Forgot password?":"نسيت كلمة المرور؟","Sign-in didn't complete, please try again":"لم يكتمل تسجيل الدخول، حاول مرة أخرى","Enter your email and a password of 6+ characters":"أدخل بريدك وكلمة مرور من 6 أحرف أو أكثر","Account created — check your email to verify it":"تم إنشاء الحساب — تحقق من بريدك لتأكيده","This email already has an account — tap Sign in":"هذا البريد لديه حساب — اضغط تسجيل الدخول","Wrong email or password":"البريد أو كلمة المرور غير صحيحة","Type your email first":"اكتب بريدك أولاً","Password reset email sent":"تم إرسال رسالة إعادة تعيين كلمة المرور","Signed in":"تم تسجيل الدخول","Signed in as {0}":"مسجّل باسم {0}","Sign out":"تسجيل الخروج",
+"My account":"حسابي",
 "Filters":"تصفية","Saved":"المحفوظة","Newest first":"الأحدث أولاً","Price: low to high":"السعر: من الأقل للأعلى","Price: high to low":"السعر: من الأعلى للأقل","Min price":"أقل سعر","Max price":"أعلى سعر","City / Area":"المدينة / المنطقة","Apply":"تطبيق","Clear":"مسح","No saved ads yet — tap the heart on any ad to save it.":"لا توجد إعلانات محفوظة — اضغط على القلب لحفظ أي إعلان.","Sign in to save ads":"سجّل الدخول لحفظ الإعلانات","SOLD":"تم البيع","Terms of use":"شروط الاستخدام","Privacy policy":"سياسة الخصوصية",
 "Your account has been blocked from posting. Contact the site owner if you think this is a mistake.":"تم إيقاف حسابك عن النشر. تواصل مع إدارة الموقع إذا كان ذلك خطأ.","Not allowed: weapons, drugs, alcohol, medicines, counterfeit goods, or anything illegal in your country.":"ممنوع: الأسلحة، المخدرات، الكحول، الأدوية، البضائع المقلدة، أو أي شيء مخالف للقانون في بلدك.","Edit ad":"تعديل الإعلان","Save changes":"حفظ التعديلات","Saving…":"جارٍ الحفظ…","✅ Changes saved":"✅ تم حفظ التعديلات","Couldn't save, please try again":"تعذّر الحفظ، حاول مرة أخرى",
 "{0} of your ads will expire within 24 hours — tap Renew to keep them live for another {1} days.":"{0} من إعلاناتك ستنتهي خلال 24 ساعة — اضغط تجديد لإبقائها {1} أيام أخرى.","Renew":"تجديد","Edit":"تعديل","Marked as sold":"تم وضع علامة مباع","Marked as available":"الإعلان متاح مجدداً","Couldn't update, please try again":"تعذّر التحديث، حاول مرة أخرى","Views":"المشاهدات","Safety tip: meet in a public place and never pay before seeing the item.":"نصيحة أمان: قابل البائع في مكان عام ولا تدفع قبل معاينة المنتج.","Share":"مشاركة","Copy link":"نسخ الرابط","Mark as sold":"تم البيع","Mark as available":"إعادة كمتاح","Report ad":"الإبلاغ عن الإعلان","Link copied":"تم نسخ الرابط","This ad is no longer available":"هذا الإعلان لم يعد متاحاً",
@@ -295,7 +328,7 @@ function renderNav(){
   if(isOwner)items.push(["admin","admin","Admin"]);
   $("#nav").innerHTML=items.map(([v,i,t])=>`<a href="#${v}" class="${v===view?"on":""} ${v==="post"?"post":""}"><i><img src="${i}.png" alt=""></i>${T(t)}</a>`).join("");
   $("#cbtn").innerHTML=`${flag(country)} <span class="cnm">${esc(cName(country))} · </span>${curFor(country)} ▾`;
-  $("#lbtn").textContent=lang==="ar"?"EN":"عربي";{const ab=$("#abtn");if(ab)ab.innerHTML=`👤<span class="atx"> ${uid?T("Sign out"):T("Sign in")}</span>`;}$("#q").placeholder=T("Search ads in your country…");$("#qbtn").textContent=T("Search");
+  $("#lbtn").textContent=lang==="ar"?"EN":"عربي";{const pb=$("#pbtn");if(pb)pb.textContent="+ "+T("Post Ad");}{const ab=$("#abtn");if(ab)ab.innerHTML=`👤<span class="atx"> ${uid?T("Sign out"):T("Sign in")}</span>`;}$("#q").placeholder=T("Search ads in your country…");$("#qbtn").textContent=T("Search");
 }
 function render(){
   renderNav();
@@ -327,7 +360,9 @@ function homeHTML(){
   const k=quota();
   const fon=fMin!==""||fMax!==""||fCity!=="";
   const fbar=`<div class="fbar"><button class="chip ${showFilters||fon?"on":""}" onclick="showFilters=!showFilters;render()">⚙️ ${T("Filters")}${fon?" •":""}</button><button class="chip ${showSaved?"on":""}" onclick="showSaved=!showSaved;render()">❤️ ${T("Saved")} (${favs.size})</button><select class="chip" onchange="fSort=this.value;render()"><option value="new" ${fSort==="new"?"selected":""}>${T("Newest first")}</option><option value="low" ${fSort==="low"?"selected":""}>${T("Price: low to high")}</option><option value="high" ${fSort==="high"?"selected":""}>${T("Price: high to low")}</option></select></div>`+(showFilters?`<div class="panel fpanel"><div class="row"><div><label>${T("Min price")}</label><input type="number" id="fmin" min="0" value="${esc(fMin)}"></div><div><label>${T("Max price")}</label><input type="number" id="fmax" min="0" value="${esc(fMax)}"></div></div><label>${T("City / Area")}</label><input type="text" id="fcity" value="${esc(fCity)}" placeholder="${T("e.g. Doha, Al Sadd")}"><div class="acts" style="margin-top:12px"><button class="btn sm" onclick="applyF()">${T("Apply")}</button><button class="btn sec sm" onclick="clearF()">${T("Clear")}</button></div></div>`:"");
-  const chips=[["All","✨"],...CATS].map(([c,i])=>`<button class="chip ${c===cat?"on":""}" onclick="${c==="All"?"openCats()":`setCat('${c}')`}">${c==="All"?`<img src="all.png" alt="" style="border-radius:0;object-fit:contain">`:catPic(c)?`<img src="${catPic(c)}" alt="">`:i+" "}${c==="All"?T("All categories")+" ▾":T(c)}</button>`).join("");
+  const chip=([c,i])=>`<button class="chip ${c===cat?"on":""}" onclick="${c==="All"?"openCats()":`setCat('${c}')`}">${c==="All"?`<img src="all.png" alt="" style="border-radius:0;object-fit:contain">`:catPic(c)?`<img src="${catPic(c)}" alt="">`:i+" "}${c==="All"?T("All categories")+" ▾":T(c)}</button>`;
+  const cset=CATS.map(chip).join("");
+  const chips=`<div class="chipfix">${chip(["All","✨"])}</div><div class="marq"><div class="mtrack" style="animation-duration:${CATS.length*4.5}s;animation-delay:-${((Date.now()/1000)%(CATS.length*4.5)).toFixed(2)}s"><div class="mset">${cset}</div><div class="mset" aria-hidden="true">${cset}</div></div></div>`;
   const promo=`<div class="promo"><img class="bn" src="banner-free.jpg" alt="All ads free"><div><p>${FREE_LAUNCH?T("<b>All ads are FREE for now!</b><br>Post as many as you like"):`Then just <b>$${PACK_PRICE} for ${PACK_POSTS} posts</b>`}<br>${T("Each ad stays live {0} days",AD_DAYS)}</p></div><button class="btn sm" onclick="go('post')">${T("Post")}</button></div>`;
   let body;
   if(status==="loading")body=`<div class="empty"><div class="e"><img class="spin" src="loading.png" alt="" style="width:46px"></div>${T("Loading ads in {0}…",esc(cName(country)))}</div>`;
@@ -345,7 +380,7 @@ function cardHTML(a){
     <div class="cb"><div class="ttl">${esc(a.title)}</div><div class="price">${fmtPrice(a.price,a.currency)}</div><div class="meta">${ic("location")} ${esc(a.city||cName(a.country))} · ${ago(a.createdAt)}</div></div></div>`;
 }
 function acctBtn(){if(!uid){openSignIn();return}
-  openModal(`<div class="hd"><h3>👤 ${T("Sign out")}?</h3><button class="x" onclick="closeModal()">✕</button></div><p id="whoami2" class="muted"></p><div class="acts"><button class="btn" onclick="window.nxSignOut&&window.nxSignOut()">${T("Sign out")}</button><button class="btn sec" onclick="closeModal()">${T("Cancel")}</button></div>`);
+  openModal(`<div class="hd"><h3>🚪 ${T("Sign out")}?</h3><button class="x" onclick="closeModal()">✕</button></div><p id="whoami2" class="muted"></p><div class="acts"><button class="btn" onclick="window.nxSignOut&&window.nxSignOut()">${T("Sign out")}</button><button class="btn sec" onclick="closeModal()">${T("Cancel")}</button></div>`);
   if(window.nxCurrentUser)window.nxCurrentUser().then(u=>{const w=$("#whoami2");if(w&&u)w.textContent=T("Signed in as {0}",u.name||u.email)})}
 function signInBox(msg){return `<div class="panel" style="text-align:center;padding:28px 18px"><img src="mark.png" alt="" style="width:64px"><p style="margin:12px 0 16px">${msg}</p><button class="btn" style="width:100%;max-width:320px" onclick="doGoogle()">G&nbsp; ${T("Continue with Google")}</button><br><br><button class="btn sec" style="width:100%;max-width:320px" onclick="openSignIn(true)">✉️ ${T("Use email instead")}</button></div>`}
 function openSignIn(emailOnly){
@@ -523,12 +558,18 @@ async function requestPack(){
   catch(e){toast("Couldn't send request, try again")}
 }
 
+let adStats=null,statsBusy=false;
+function loadStats(){if(statsBusy||!db)return;statsBusy=true;db.collection("ads").get().then(sn=>{const now=Date.now(),m={};sn.docs.forEach(d=>{const a=d.data()||{};const c=a.country||"??";if(!m[c])m[c]={total:0,live:0,sellers:new Set()};m[c].total++;if((a.expiresAt||0)>now)m[c].live++;if(a.ownerId)m[c].sellers.add(a.ownerId)});adStats=m;statsBusy=false;if(view==="admin")render()}).catch(()=>{statsBusy=false})}
+function statsHTML(){if(!adStats){loadStats();return `<div class="panel"><h2>🌍 Ads by country</h2><p class="muted">Loading…</p></div>`}
+  const rows=Object.entries(adStats).sort((a,b)=>b[1].total-a[1].total);
+  return `<div class="panel"><h2>🌍 Ads by country</h2>${rows.length?`<table class="stat"><tr><th>Country</th><th>Live ads</th><th>All ads</th><th>Sellers</th></tr>${rows.map(([c,v])=>`<tr><td>${flag(c)} ${esc(cName(c))}</td><td><b>${v.live}</b></td><td>${v.total}</td><td>${v.sellers.size}</td></tr>`).join("")}</table>`:`<p class="muted">No ads yet.</p>`}<p class="note">Based on the country each ad was posted in. <a href="#" onclick="event.preventDefault();adStats=null;render()">Refresh</a></p></div>`}
 function adminHTML(){
   const pend=pays.filter(p=>p.status==="pending").sort((a,b)=>a.createdAt-b.createdAt);
   const done=pays.filter(p=>p.status!=="pending").sort((a,b)=>b.createdAt-a.createdAt).slice(0,30);
   const rev=pays.filter(p=>p.status==="approved").length*PACK_PRICE;
   const row=(p,act)=>`<div class="it"><div class="im"><img src="payment.png" alt="" style="width:40px"></div><div class="tx"><b>${flag(p.country)} ${esc(cName(p.country))} · $${p.amountUSD||PACK_PRICE}</b><span class="muted" style="font-size:12px">${esc(p.method)} · ref <b>${esc(p.reference)}</b> · ${ic("phone")} ${esc(p.phone)} · ${fmtDate(p.createdAt)}</span></div>${act?`<div style="display:flex;flex-direction:column;gap:6px"><button class="btn okb sm" onclick="approve('${esc(p.id)}')">Approve</button><button class="btn sec sm" onclick="reject('${esc(p.id)}')">Reject</button></div>`:p.status==="approved"?`<span class="pill g">Approved</span>`:`<span class="pill r">Rejected</span>`}</div>`;
   return `<div class="quota" style="margin-bottom:12px"><div class="q"><b>${pend.length}</b><small>Pending payments</small></div><div class="q"><b>${activeAds(ads).length}</b><small>Live ads in ${esc(cName(country))}</small></div><div class="q"><b>$${rev}</b><small>Approved revenue<br>≈ QAR ${(rev*USD_QAR).toFixed(2)}</small></div></div>
+  ${statsHTML()}
   <div class="panel"><h2>Pending payment requests</h2>${pend.length?`<div class="list">${pend.map(p=>row(p,true)).join("")}</div>`:`<p class="muted">Nothing waiting. ${ic("party")}</p>`}<p class="note">Approve only after you've received the money. Approving gives the user ${PACK_POSTS} posts for that country, valid ${PACK_DAYS} days.</p></div>
   <div class="panel"><h2>Recent decisions</h2>${done.length?`<div class="list">${done.map(p=>row(p,false)).join("")}</div>`:`<p class="muted">None yet.</p>`}</div>
   <div class="panel"><h2>🚩 Reported ads (${reports.length})</h2>${reports.length?`<div class="list">${[...reports].sort((a,b)=>b.createdAt-a.createdAt).map(r=>`<div class="it"><div class="tx"><b style="cursor:pointer" onclick="openAdAny('${esc(r.adId)}')">${esc(r.title||r.adId)}</b><span class="muted" style="font-size:12px">${esc(r.reason)}${r.note?" — "+esc(r.note):""} · ${flag(r.country)} · ${fmtDate(r.createdAt)}</span></div><div style="display:flex;flex-direction:column;gap:6px"><button class="btn sm" onclick="removeReported('${esc(r.reporter)}',${Number(r.createdAt)},'${esc(r.adId)}')">Remove ad</button>${r.ownerId&&r.ownerId!=="demo"?`<button class="btn sec sm" onclick="blockSeller('${esc(r.ownerId)}')">Block seller</button>`:""}<button class="btn sec sm" onclick="dismissReport('${esc(r.reporter)}',${Number(r.createdAt)})">Dismiss</button></div></div>`).join("")}</div>`:`<p class="muted">No reports. ${ic("party")}</p>`}</div>
