@@ -150,6 +150,16 @@ select.chip{width:auto;padding:6px 12px;border-radius:999px}
 .legal h4{margin:12px 0 4px}
 @media(min-width:1300px){.grid{grid-template-columns:repeat(6,1fr)!important}}
 @media(min-width:1600px){.grid{grid-template-columns:repeat(7,1fr)!important}}
+.chips{align-items:center}
+.chipfix{flex:none}
+.marq{flex:1;min-width:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent);mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent)}
+.mtrack{display:flex;width:max-content;animation:mq 80s linear infinite}
+.mset{display:flex;gap:8px;padding-inline-end:8px}
+.marq:hover .mtrack,.marq:active .mtrack,.marq:focus-within .mtrack{animation-play-state:paused}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+html[dir=rtl] .mtrack{animation-name:mqr}
+@keyframes mqr{from{transform:translateX(0)}to{transform:translateX(50%)}}
+@media(prefers-reduced-motion:reduce){.mtrack{animation:none}.marq{overflow-x:auto}}
 .foot{text-align:center;color:var(--mut);font-size:11.5px;margin-top:24px}
 </style>
 <style>
@@ -170,13 +180,13 @@ select.chip{width:auto;padding:6px 12px;border-radius:999px}
 .hbtns .cbtn{height:34px;box-sizing:border-box;padding:0 13px;font-size:13px;line-height:1}
 .pbtn{display:none!important;background:#fff!important;color:var(--red)!important;font-weight:700;border-color:#fff!important}
 @media(min-width:900px){
- nav{top:100px;bottom:auto;left:12px;right:auto;width:104px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:6px 0}
+ nav{top:100px;bottom:auto;left:10px;right:auto;width:84px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:6px 0}
  nav .in{flex-direction:column;max-width:none}
- nav a{padding:12px 4px;font-size:12px;border-radius:12px;margin:0 6px}
+ nav a{padding:8px 2px;font-size:11px;border-radius:10px;margin:0 5px}
  nav a.on{background:#fff3ec}
- nav a i img{width:30px;height:30px}
- nav a.post i img{width:36px;height:36px;margin-top:0}
- main{padding-left:130px;padding-right:20px;padding-bottom:40px;max-width:1700px}
+ nav a i img{width:24px;height:24px}
+ nav a.post i img{width:30px;height:30px;margin-top:0}
+ main{padding-left:108px;padding-right:20px;padding-bottom:40px;max-width:1700px}
  .top{max-width:1700px!important}
  .pbtn{display:flex!important}#toast{bottom:30px}}
 @media(max-width:760px){.top .search{height:30px}.hbtns .cbtn{height:30px;padding:0 10px;font-size:12px}}
@@ -189,12 +199,12 @@ select.chip{width:auto;padding:6px 12px;border-radius:999px}
 <body>
 <header>
   <div class="top">
-    <div class="logo" onclick="go('home')"><img src="logo-full.png" alt="Naa Souq"></div>
+    <div class="logo" onclick="goHome(event)"><img src="logo-full.png" alt="Naa Souq"></div>
     <form class="search" onsubmit="event.preventDefault();doSearch()">
       <input id="q" type="text" placeholder="Search ads in your country…" autocomplete="off">
       <button type="submit" id="qbtn">Search</button>
     </form>
-    <div class="hbtns"><button class="cbtn" id="cbtn" onclick="openCountry()"></button><button class="cbtn lbtn" id="lbtn" onclick="toggleLang()">عربي</button><button class="cbtn pbtn" onclick="go('post')" id="pbtn">+ Post Ad</button><button class="cbtn lbtn" id="abtn" onclick="acctBtn()">👤</button></div>
+    <div class="hbtns"><button class="cbtn" id="cbtn" onclick="openCountry()"></button><button class="cbtn lbtn" id="lbtn" onclick="toggleLang()">عربي</button><button class="cbtn lbtn" id="abtn" onclick="acctBtn()">👤</button></div>
   </div>
 </header>
 <main id="view"></main>
@@ -216,7 +226,8 @@ const COUNTRIES=("AF:Afghanistan|AL:Albania|DZ:Algeria|AD:Andorra|AO:Angola|AG:A
   .split("|").map(s=>{const [c,n]=s.split(":");return {c,n}});
 const cNameEn=c=>(COUNTRIES.find(x=>x.c===c)||{n:c}).n;
 const cName=c=>{if(lang==="ar"&&arNames){try{const n=arNames.of(c);if(n&&n!==c)return n}catch(e){}}return cNameEn(c)};
-const flag=c=>c&&c.length===2?String.fromCodePoint(...[...c].map(ch=>127397+ch.charCodeAt(0))):"🌍";
+const NO_FLAGS=/Windows/i.test(navigator.userAgent||"");
+const flag=c=>NO_FLAGS?"":(c&&c.length===2?String.fromCodePoint(...[...c].map(ch=>127397+ch.charCodeAt(0))):"🌍");
 const EUR="AT BE CY DE EE ES FI FR GR HR IE IT LT LU LV MT NL PT SI SK AD MC SM VA ME XK".split(" ");
 const CUR_MAP={AF:"AFN",AL:"ALL",DZ:"DZD",AO:"AOA",AR:"ARS",AM:"AMD",AZ:"AZN",BY:"BYN",BR:"BRL",BG:"BGN",KH:"KHR",CM:"XAF",CL:"CLP",CO:"COP",CR:"CRC",CZ:"CZK",DK:"DKK",DO:"DOP",ET:"ETB",GE:"GEL",GH:"GHS",GT:"GTQ",HK:"HKD",HU:"HUF",IS:"ISK",IR:"IRR",IQ:"IQD",IL:"ILS",JM:"JMD",KZ:"KZT",KG:"KGS",LB:"LBP",LY:"LYD",MO:"MOP",MV:"MVR",MU:"MUR",MD:"MDL",MN:"MNT",MA:"MAD",MM:"MMK",NO:"NOK",NZ:"NZD",PE:"PEN",PL:"PLN",RO:"RON",RU:"RUB",RS:"RSD",KR:"KRW",SD:"SDG",SE:"SEK",CH:"CHF",SY:"SYP",TW:"TWD",TZ:"TZS",TH:"THB",TN:"TND",UG:"UGX",UA:"UAH",UZ:"UZS",VN:"VND",YE:"YER",ZM:"ZMW",MX:"MXN",TT:"TTD",UY:"UYU",PY:"PYG",BO:"BOB",VE:"VES",KP:"KPW",LA:"LAK",BN:"BND",SC:"SCR",RW:"RWF",SN:"XOF",CI:"XOF",MZ:"MZN",NA:"NAD",BW:"BWP",ZW:"USD",PS:"ILS",QA:"QAR",AE:"AED",SA:"SAR",KW:"KWD",OM:"OMR",BH:"BHD",LK:"LKR",IN:"INR",PK:"PKR",BD:"BDT",PH:"PHP",EG:"EGP",GB:"GBP",US:"USD",CN:"CNY",JP:"JPY",NP:"NPR",MY:"MYR",SG:"SGD",ID:"IDR",TR:"TRY",JO:"JOD",CA:"CAD",AU:"AUD",ZA:"ZAR",NG:"NGN",KE:"KES"};
 const CURS=["USD","QAR","AED","SAR","KWD","OMR","BHD","EUR","GBP","INR","LKR","PKR","BDT","PHP","NPR","EGP","CNY","JPY","MYR","SGD","IDR","TRY","JOD","CAD","AUD","ZAR","NGN","KES"];
@@ -239,7 +250,7 @@ const AR={"Home":"الرئيسية","My Ads":"إعلاناتي","Post Ad":"أض�
 "Choose your country":"اختر بلدك","Search country…":"ابحث عن بلد…","Showing {0} · prices in {1} — tap the country to change":"عرض {0} · الأسعار بـ {1} — اضغط على الدولة للتغيير",
 "This marketplace needs you to be signed in to claude.ai to load and post ads.":"يجب تسجيل الدخول لعرض الإعلانات ونشرها.","Ads can't be reached yet — showing what's available. They'll appear automatically once connected.":"تعذّر الوصول إلى الإعلانات حالياً — ستظهر تلقائياً عند الاتصال.",
 "Can't connect right now — please check your internet connection and refresh.":"تعذّر الاتصال حالياً — تحقق من الإنترنت وحدّث الصفحة.","Sign in to post your ads — it's free.":"سجّل الدخول لنشر إعلاناتك — مجاناً.","Sign in to see and manage your ads.":"سجّل الدخول لعرض إعلاناتك وإدارتها.","Continue with Google":"المتابعة باستخدام Google","Use email instead":"استخدم البريد الإلكتروني","Sign in":"تسجيل الدخول","or use email":"أو استخدم البريد الإلكتروني","Your name (for new accounts)":"اسمك (للحسابات الجديدة)","Email":"البريد الإلكتروني","Password (6+ characters)":"كلمة المرور (6 أحرف أو أكثر)","Create account":"إنشاء حساب","Forgot password?":"نسيت كلمة المرور؟","Sign-in didn't complete, please try again":"لم يكتمل تسجيل الدخول، حاول مرة أخرى","Enter your email and a password of 6+ characters":"أدخل بريدك وكلمة مرور من 6 أحرف أو أكثر","Account created — check your email to verify it":"تم إنشاء الحساب — تحقق من بريدك لتأكيده","This email already has an account — tap Sign in":"هذا البريد لديه حساب — اضغط تسجيل الدخول","Wrong email or password":"البريد أو كلمة المرور غير صحيحة","Type your email first":"اكتب بريدك أولاً","Password reset email sent":"تم إرسال رسالة إعادة تعيين كلمة المرور","Signed in":"تم تسجيل الدخول","Signed in as {0}":"مسجّل باسم {0}","Sign out":"تسجيل الخروج",
-"My account":"حسابي",
+"My account":"حسابي","✅ Sent for approval — your ad goes live once the admin approves it":"✅ أُرسل للمراجعة — سيُنشر إعلانك بعد موافقة الإدارة","✅ Changes saved — sent for approval again":"✅ تم الحفظ — أُرسل للمراجعة مرة أخرى","Waiting for approval":"بانتظار الموافقة","Not approved":"غير مقبول",
 "Filters":"تصفية","Saved":"المحفوظة","Newest first":"الأحدث أولاً","Price: low to high":"السعر: من الأقل للأعلى","Price: high to low":"السعر: من الأعلى للأقل","Min price":"أقل سعر","Max price":"أعلى سعر","City / Area":"المدينة / المنطقة","Apply":"تطبيق","Clear":"مسح","No saved ads yet — tap the heart on any ad to save it.":"لا توجد إعلانات محفوظة — اضغط على القلب لحفظ أي إعلان.","Sign in to save ads":"سجّل الدخول لحفظ الإعلانات","SOLD":"تم البيع","Terms of use":"شروط الاستخدام","Privacy policy":"سياسة الخصوصية",
 "Your account has been blocked from posting. Contact the site owner if you think this is a mistake.":"تم إيقاف حسابك عن النشر. تواصل مع إدارة الموقع إذا كان ذلك خطأ.","Not allowed: weapons, drugs, alcohol, medicines, counterfeit goods, or anything illegal in your country.":"ممنوع: الأسلحة، المخدرات، الكحول، الأدوية، البضائع المقلدة، أو أي شيء مخالف للقانون في بلدك.","Edit ad":"تعديل الإعلان","Save changes":"حفظ التعديلات","Saving…":"جارٍ الحفظ…","✅ Changes saved":"✅ تم حفظ التعديلات","Couldn't save, please try again":"تعذّر الحفظ، حاول مرة أخرى",
 "{0} of your ads will expire within 24 hours — tap Renew to keep them live for another {1} days.":"{0} من إعلاناتك ستنتهي خلال 24 ساعة — اضغط تجديد لإبقائها {1} أيام أخرى.","Renew":"تجديد","Edit":"تعديل","Marked as sold":"تم وضع علامة مباع","Marked as available":"الإعلان متاح مجدداً","Couldn't update, please try again":"تعذّر التحديث، حاول مرة أخرى","Views":"المشاهدات","Safety tip: meet in a public place and never pay before seeing the item.":"نصيحة أمان: قابل البائع في مكان عام ولا تدفع قبل معاينة المنتج.","Share":"مشاركة","Copy link":"نسخ الرابط","Mark as sold":"تم البيع","Mark as available":"إعادة كمتاح","Report ad":"الإبلاغ عن الإعلان","Link copied":"تم نسخ الرابط","This ad is no longer available":"هذا الإعلان لم يعد متاحاً",
@@ -315,8 +326,8 @@ async function consume(slot){
 /* ---------- Rendering ---------- */
 function renderNav(){
   const items=[["home","home","Home"],["my","myads","My Ads"],["post","post","Post Ad"],["plans","plans","Plans"]];
-  if(isOwner)items.push(["admin","admin","Admin"]);
-  $("#nav").innerHTML=items.map(([v,i,t])=>`<a href="#${v}" class="${v===view?"on":""} ${v==="post"?"post":""}"><i><img src="${i}.png" alt=""></i>${T(t)}</a>`).join("");
+  if(isOwner)items.push(["admin","admin",pendingAds.length?`Admin (${pendingAds.length})`:"Admin"]);
+  $("#nav").innerHTML=items.map(([v,i,t])=>`<a href="#${v}" ${v==="home"?`onclick="goHome(event)"`:""} class="${v===view?"on":""} ${v==="post"?"post":""}"><i><img src="${i}.png" alt=""></i>${T(t)}</a>`).join("");
   $("#cbtn").innerHTML=`${flag(country)} <span class="cnm">${esc(cName(country))} · </span>${curFor(country)} ▾`;
   $("#lbtn").textContent=lang==="ar"?"EN":"عربي";{const pb=$("#pbtn");if(pb)pb.textContent="+ "+T("Post Ad");}{const ab=$("#abtn");if(ab)ab.innerHTML=`👤<span class="atx"> ${uid?T("Sign out"):T("Sign in")}</span>`;}$("#q").placeholder=T("Search ads in your country…");$("#qbtn").textContent=T("Search");
 }
@@ -350,7 +361,9 @@ function homeHTML(){
   const k=quota();
   const fon=fMin!==""||fMax!==""||fCity!=="";
   const fbar=`<div class="fbar"><button class="chip ${showFilters||fon?"on":""}" onclick="showFilters=!showFilters;render()">⚙️ ${T("Filters")}${fon?" •":""}</button><button class="chip ${showSaved?"on":""}" onclick="showSaved=!showSaved;render()">❤️ ${T("Saved")} (${favs.size})</button><select class="chip" onchange="fSort=this.value;render()"><option value="new" ${fSort==="new"?"selected":""}>${T("Newest first")}</option><option value="low" ${fSort==="low"?"selected":""}>${T("Price: low to high")}</option><option value="high" ${fSort==="high"?"selected":""}>${T("Price: high to low")}</option></select></div>`+(showFilters?`<div class="panel fpanel"><div class="row"><div><label>${T("Min price")}</label><input type="number" id="fmin" min="0" value="${esc(fMin)}"></div><div><label>${T("Max price")}</label><input type="number" id="fmax" min="0" value="${esc(fMax)}"></div></div><label>${T("City / Area")}</label><input type="text" id="fcity" value="${esc(fCity)}" placeholder="${T("e.g. Doha, Al Sadd")}"><div class="acts" style="margin-top:12px"><button class="btn sm" onclick="applyF()">${T("Apply")}</button><button class="btn sec sm" onclick="clearF()">${T("Clear")}</button></div></div>`:"");
-  const chips=[["All","✨"],...CATS].map(([c,i])=>`<button class="chip ${c===cat?"on":""}" onclick="${c==="All"?"openCats()":`setCat('${c}')`}">${c==="All"?`<img src="all.png" alt="" style="border-radius:0;object-fit:contain">`:catPic(c)?`<img src="${catPic(c)}" alt="">`:i+" "}${c==="All"?T("All categories")+" ▾":T(c)}</button>`).join("");
+  const chip=([c,i])=>`<button class="chip ${c===cat?"on":""}" onclick="${c==="All"?"openCats()":`setCat('${c}')`}">${c==="All"?`<img src="all.png" alt="" style="border-radius:0;object-fit:contain">`:catPic(c)?`<img src="${catPic(c)}" alt="">`:i+" "}${c==="All"?T("All categories")+" ▾":T(c)}</button>`;
+  const cset=CATS.map(chip).join("");
+  const chips=`<div class="chipfix">${chip(["All","✨"])}</div><div class="marq"><div class="mtrack" style="animation-duration:${CATS.length*4.5}s;animation-delay:-${((Date.now()/1000)%(CATS.length*4.5)).toFixed(2)}s"><div class="mset">${cset}</div><div class="mset" aria-hidden="true">${cset}</div></div></div>`;
   const promo=`<div class="promo"><img class="bn" src="banner-free.jpg" alt="All ads free"><div><p>${FREE_LAUNCH?T("<b>All ads are FREE for now!</b><br>Post as many as you like"):`Then just <b>$${PACK_PRICE} for ${PACK_POSTS} posts</b>`}<br>${T("Each ad stays live {0} days",AD_DAYS)}</p></div><button class="btn sm" onclick="go('post')">${T("Post")}</button></div>`;
   let body;
   if(status==="loading")body=`<div class="empty"><div class="e"><img class="spin" src="loading.png" alt="" style="width:46px"></div>${T("Loading ads in {0}…",esc(cName(country)))}</div>`;
@@ -383,6 +396,7 @@ async function doGoogle(){try{await window.nxSignInGoogle()}catch(e){toast(T("Si
 async function doEmail(isNew){const e=$("#semail").value.trim(),p=$("#spass").value,n=$("#sname").value.trim();if(!e||p.length<6){toast(T("Enter your email and a password of 6+ characters"));return}
   try{await window.nxEmailAuth(e,p,isNew,n);if(isNew)toast(T("Account created — check your email to verify it"))}catch(x){const c=(x&&x.code)||"";toast(c.includes("email-already")?T("This email already has an account — tap Sign in"):c.includes("invalid")||c.includes("wrong")||c.includes("not-found")?T("Wrong email or password"):T("Sign-in didn't complete, please try again"))}}
 async function doReset(){const e=$("#semail").value.trim();if(!e){toast(T("Type your email first"));return}try{await window.nxResetPassword(e);toast(T("Password reset email sent"))}catch(x){toast(T("Couldn't send, please try again"))}}
+function goHome(e){if(e)e.preventDefault();cat="All";q="";fMin="";fMax="";fCity="";showSaved=false;showFilters=false;const qi=$("#q");if(qi)qi.value="";closeModal();if(view!=="home")go("home");else{render();window.scrollTo(0,0)}}
 function applyF(){fMin=$("#fmin").value;fMax=$("#fmax").value;fCity=$("#fcity").value.trim();showFilters=false;render()}
 function clearF(){fMin="";fMax="";fCity="";showFilters=false;render()}
 async function toggleFav(id){
@@ -464,21 +478,21 @@ async function submitAd(){
   const pr=$("#pprice").value;
   if(editingId){
     const btn=$("#psubmit");btn.disabled=true;btn.textContent=T("Saving…");
-    try{await db.doc("ads/"+editingId).update({title:t,category:$("#pcat").value,price:pr===""?"":Number(pr),currency:$("#pcur").value,city,description:d,phone:ph,photos:draftPhotos.slice(0,MAX_PHOTOS)});
+    try{await db.doc("ads/"+editingId).update({title:t,category:$("#pcat").value,price:pr===""?"":Number(pr),currency:$("#pcur").value,city,description:d,phone:ph,photos:draftPhotos.slice(0,MAX_PHOTOS),status:isOwner?"approved":"pending"});
       const e=[...myAds,...ads,...extAds].find(x=>x.id===editingId);if(e)Object.assign(e,{title:t,city,description:d,phone:ph,photos:draftPhotos.slice(0,MAX_PHOTOS)});
-      editingId=null;draftPhotos=[];toast(T("✅ Changes saved"));go("my")}
+      editingId=null;draftPhotos=[];toast(isOwner?T("✅ Changes saved"):T("✅ Changes saved — sent for approval again"));go("my")}
     catch(e){btn.disabled=false;btn.textContent=T("Save changes");toast(T("Couldn't save, please try again"))}
     return;
   }
   const slot=slotFor(country);if(!slot){toast("No posts left for this country");return}
   const btn=$("#psubmit");btn.disabled=true;btn.textContent=T("Publishing…");
   const now=Date.now();
-  const ad={ownerId:uid,title:t,category:$("#pcat").value,price:pr===""?"":Number(pr),currency:$("#pcur").value,city,description:d,phone:ph,country,photos:draftPhotos.slice(0,MAX_PHOTOS),createdAt:now,expiresAt:now+AD_DAYS*DAY,paid:slot==="pack"};
+  const ad={ownerId:uid,title:t,category:$("#pcat").value,price:pr===""?"":Number(pr),currency:$("#pcur").value,city,description:d,phone:ph,country,photos:draftPhotos.slice(0,MAX_PHOTOS),createdAt:now,expiresAt:now+AD_DAYS*DAY,paid:slot==="pack",status:isOwner?"approved":"pending"};
   try{
     await db.collection("ads").add(ad);
     await consume(slot);
     save("nx_phone",ph);draftPhotos=[];
-    toast(T("✅ Your ad is live for {0} days",AD_DAYS));go("my");
+    toast(isOwner?T("✅ Your ad is live for {0} days",AD_DAYS):T("✅ Sent for approval — your ad goes live once the admin approves it"));go("my");
   }catch(e){
     btn.disabled=false;btn.textContent=T("Publish ad");
     if(e&&e.code==="quota_exceeded")toast("Storage is full — please contact the site owner");
@@ -496,7 +510,7 @@ function myHTML(){
   const rows=list.map(a=>{const live=(a.expiresAt||0)>now;const soon=live&&(a.expiresAt-now)<DAY;const p=(a.photos&&a.photos[0])||catPic(a.category);
     return `<div class="it"><div class="im" style="${p?`background-image:url('${p}')`:""}">${p?"":catIcon(a.category)}</div>
     <div class="tx" style="cursor:pointer" onclick="openAd('${esc(a.id)}')"><b>${esc(a.title)}</b><span class="muted" style="font-size:12px">${flag(a.country)} ${esc(a.city)} · ${fmtPrice(a.price,a.currency)}</span><br>
-    ${live?`<span class="pill ${soon?"y":"g"}">${T("Live · {0}",left(a.expiresAt))}</span>`:`<span class="pill r">${T("Expired")}</span>`} ${a.sold?`<span class="pill g">${T("SOLD")}</span>`:""} <span class="muted" style="font-size:11px">👁 ${a.views||0}</span></div>
+    ${a.status==="pending"||!a.status?`<span class="pill y">⏳ ${T("Waiting for approval")}</span>`:a.status==="rejected"?`<span class="pill r">${T("Not approved")}${a.rejectReason?": "+esc(a.rejectReason):""}</span>`:live?`<span class="pill ${soon?"y":"g"}">${T("Live · {0}",left(a.expiresAt))}</span>`:`<span class="pill r">${T("Expired")}</span>`} ${a.sold?`<span class="pill g">${T("SOLD")}</span>`:""} <span class="muted" style="font-size:11px">👁 ${a.views||0}</span></div>
     <div style="display:flex;flex-direction:column;gap:6px">${!live||soon?`<button class="btn sm" onclick="repost('${esc(a.id)}')">${live?T("Renew"):T("Repost")}</button>`:""}<button class="btn sec sm" onclick="startEdit('${esc(a.id)}')">${T("Edit")}</button><button class="btn sec sm" onclick="delAd('${esc(a.id)}')">${T("Delete")}</button></div></div>`}).join("");
   return `<div class="panel" style="display:flex;align-items:center;gap:10px;padding:12px 16px"><span style="flex:1" id="whoami">${T("Signed in")}</span><button class="btn sec sm" onclick="nxSignOut()">${T("Sign out")}</button></div>${soonN?`<div class="alert">⏰ ${T("{0} of your ads will expire within 24 hours — tap Renew to keep them live for another {1} days.",soonN,AD_DAYS)}</div>`:""}<div class="panel"><h2>${T("My balance")}</h2>${quotaHTML()}<div class="acts" style="margin-top:10px"><button class="btn sm" onclick="go('post')">${T("+ Post ad")}</button>${FREE_LAUNCH?"":`<button class="btn sec sm" onclick="go('plans')">Buy ${PACK_POSTS} posts · $${PACK_PRICE}</button>`}</div></div>
   <div class="panel"><h2>${T("My ads ({0})",list.length)}</h2>${list.length?`<div class="list">${rows}</div>`:`<div class="empty" style="padding:20px">${T("You haven't posted any ads yet.")}</div>`}
@@ -546,8 +560,14 @@ async function requestPack(){
   catch(e){toast("Couldn't send request, try again")}
 }
 
-let adStats=null,statsBusy=false;
-function loadStats(){if(statsBusy||!db)return;statsBusy=true;db.collection("ads").get().then(sn=>{const now=Date.now(),m={};sn.docs.forEach(d=>{const a=d.data()||{};const c=a.country||"??";if(!m[c])m[c]={total:0,live:0,sellers:new Set()};m[c].total++;if((a.expiresAt||0)>now)m[c].live++;if(a.ownerId)m[c].sellers.add(a.ownerId)});adStats=m;statsBusy=false;if(view==="admin")render()}).catch(()=>{statsBusy=false})}
+let adStats=null,statsBusy=false,pendingAds=[],legacyAds=[];
+function loadStats(){if(statsBusy||!db)return;statsBusy=true;db.collection("ads").get().then(sn=>{const now=Date.now(),m={};legacyAds=[];sn.docs.forEach(d=>{const a=d.data()||{};if(!a.status)legacyAds.push({id:d.id,...a});const c=a.country||"??";if(!m[c])m[c]={total:0,live:0,sellers:new Set()};m[c].total++;if((a.expiresAt||0)>now&&a.status==="approved")m[c].live++;if(a.ownerId)m[c].sellers.add(a.ownerId)});adStats=m;statsBusy=false;if(view==="admin")render()}).catch(()=>{statsBusy=false})}
+function approvalHTML(){
+  const list=[...pendingAds,...legacyAds.filter(x=>!pendingAds.some(p=>p.id===x.id))].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+  return `<div class="panel" style="border:2px solid ${list.length?"var(--org)":"transparent"}"><h2>⏳ Ads waiting for approval (${list.length})</h2>${list.length?`<div class="list">${list.map(a=>{const p=(a.photos&&a.photos[0])||catPic(a.category);return `<div class="it"><div class="im" style="${p?`background-image:url('${p}')`:""}"></div><div class="tx" style="cursor:pointer" onclick="openAdAny('${esc(a.id)}')"><b>${esc(a.title)}</b><span class="muted" style="font-size:12px">${flag(a.country)} ${esc(a.city)} · ${fmtPrice(a.price,a.currency)} · ${esc(a.category)}</span><br><span class="muted" style="font-size:12px">${esc((a.description||"").slice(0,90))}</span></div><div style="display:flex;flex-direction:column;gap:6px"><button class="btn okb sm" onclick="approveAd('${esc(a.id)}')">Approve</button><button class="btn sec sm" onclick="rejectAd('${esc(a.id)}')">Reject</button></div></div>`}).join("")}</div>`:`<p class="muted">Nothing waiting. ${ic("party")}</p>`}<p class="note">Tap an ad to see its photos and full details before deciding. Approved ads go live for ${AD_DAYS} days from approval.</p></div>`}
+async function approveAd(id){try{const now=Date.now();await db.doc("ads/"+id).update({status:"approved",createdAt:now,expiresAt:now+AD_DAYS*DAY,rejectReason:""});legacyAds=legacyAds.filter(x=>x.id!==id);closeModal();toast("✅ Ad approved — it's live now");render()}catch(e){toast("Couldn't approve, try again")}}
+function rejectAd(id){openModal(`<div class="hd"><h3>Reject this ad?</h3><button class="x" onclick="closeModal()">✕</button></div><label>Reason (the seller will see it)</label><select id="rjr"><option>Banned or illegal item</option><option>Wrong category</option><option>Unclear or missing details</option><option>Duplicate or spam</option><option>Offensive content</option><option>Other</option></select><br><br><div class="acts"><button class="btn" onclick="doReject('${esc(id)}')">Reject</button><button class="btn sec" onclick="closeModal()">Cancel</button></div>`)}
+async function doReject(id){try{await db.doc("ads/"+id).update({status:"rejected",rejectReason:$("#rjr").value});legacyAds=legacyAds.filter(x=>x.id!==id);closeModal();toast("Ad rejected");render()}catch(e){toast("Couldn't update, try again")}}
 function statsHTML(){if(!adStats){loadStats();return `<div class="panel"><h2>🌍 Ads by country</h2><p class="muted">Loading…</p></div>`}
   const rows=Object.entries(adStats).sort((a,b)=>b[1].total-a[1].total);
   return `<div class="panel"><h2>🌍 Ads by country</h2>${rows.length?`<table class="stat"><tr><th>Country</th><th>Live ads</th><th>All ads</th><th>Sellers</th></tr>${rows.map(([c,v])=>`<tr><td>${flag(c)} ${esc(cName(c))}</td><td><b>${v.live}</b></td><td>${v.total}</td><td>${v.sellers.size}</td></tr>`).join("")}</table>`:`<p class="muted">No ads yet.</p>`}<p class="note">Based on the country each ad was posted in. <a href="#" onclick="event.preventDefault();adStats=null;render()">Refresh</a></p></div>`}
@@ -557,6 +577,7 @@ function adminHTML(){
   const rev=pays.filter(p=>p.status==="approved").length*PACK_PRICE;
   const row=(p,act)=>`<div class="it"><div class="im"><img src="payment.png" alt="" style="width:40px"></div><div class="tx"><b>${flag(p.country)} ${esc(cName(p.country))} · $${p.amountUSD||PACK_PRICE}</b><span class="muted" style="font-size:12px">${esc(p.method)} · ref <b>${esc(p.reference)}</b> · ${ic("phone")} ${esc(p.phone)} · ${fmtDate(p.createdAt)}</span></div>${act?`<div style="display:flex;flex-direction:column;gap:6px"><button class="btn okb sm" onclick="approve('${esc(p.id)}')">Approve</button><button class="btn sec sm" onclick="reject('${esc(p.id)}')">Reject</button></div>`:p.status==="approved"?`<span class="pill g">Approved</span>`:`<span class="pill r">Rejected</span>`}</div>`;
   return `<div class="quota" style="margin-bottom:12px"><div class="q"><b>${pend.length}</b><small>Pending payments</small></div><div class="q"><b>${activeAds(ads).length}</b><small>Live ads in ${esc(cName(country))}</small></div><div class="q"><b>$${rev}</b><small>Approved revenue<br>≈ QAR ${(rev*USD_QAR).toFixed(2)}</small></div></div>
+  ${approvalHTML()}
   ${statsHTML()}
   <div class="panel"><h2>Pending payment requests</h2>${pend.length?`<div class="list">${pend.map(p=>row(p,true)).join("")}</div>`:`<p class="muted">Nothing waiting. ${ic("party")}</p>`}<p class="note">Approve only after you've received the money. Approving gives the user ${PACK_POSTS} posts for that country, valid ${PACK_DAYS} days.</p></div>
   <div class="panel"><h2>Recent decisions</h2>${done.length?`<div class="list">${done.map(p=>row(p,false)).join("")}</div>`:`<p class="muted">None yet.</p>`}</div>
@@ -600,6 +621,7 @@ async function openAd(id){
      <button class="btn sec" onclick="copyLink('${esc(a.id)}')">🔗 ${T("Copy link")}</button>
      ${mine?`<button class="btn sec" onclick="startEdit('${esc(a.id)}')">✏️ ${T("Edit")}</button><button class="btn sec" onclick="toggleSold('${esc(a.id)}')">${a.sold?T("Mark as available"):"✅ "+T("Mark as sold")}</button>`:""}
      ${mine||isOwner?`<button class="btn sec" onclick="delAd('${esc(a.id)}')">${mine?T("Delete my ad"):T("Remove ad")}</button>`:""}
+     ${isOwner&&a.status!=="approved"?`<button class="btn okb" onclick="approveAd('${esc(a.id)}')">✅ Approve</button><button class="btn sec" onclick="rejectAd('${esc(a.id)}')">Reject</button>`:""}
      ${!mine&&uid?`<button class="btn sec" style="color:#c42a05" onclick="openReport('${esc(a.id)}')">🚩 ${T("Report ad")}</button>`:""}
    </div>`);
   window._gal=ph;
@@ -678,7 +700,7 @@ function subscribeAds(){
   if(!db)return;
   if(unsubAds)unsubAds();
   ads=[];status="loading";startTimer();
-  unsubAds=db.collection("ads").where("country","==",country).onSnapshot(s=>{
+  unsubAds=db.collection("ads").where("country","==",country).where("status","==","approved").onSnapshot(s=>{
     ads=s.docs.map(d=>({id:d.id,...d.data()}));
     if(!s.metadata.fromCache){status="ready";clearTimeout(loadTimer)}else if(status==="loading")status="ready";
     if(view==="home"||view==="admin")render();
@@ -706,6 +728,7 @@ try{if("serviceWorker" in navigator&&window.top===window.self&&location.protocol
   if(uid){
     db.collection("ads").where("ownerId","==",uid).onSnapshot(s=>{myAds=s.docs.map(d=>({id:d.id,...d.data()}));if(view==="my")render()},()=>{});
     db.doc("data/users/"+uid+"/prefs").onSnapshot(sn=>{const d=sn.exists?sn.data():{};favs=new Set(Array.isArray(d.favs)?d.favs:[]);if(view==="home")render()},()=>{});
+    if(isOwner)db.collection("ads").where("status","==","pending").onSnapshot(sn=>{pendingAds=sn.docs.map(d=>({id:d.id,...d.data()}));renderNav();if(view==="admin")render()},()=>{});
     if(isOwner)db.collection("reports").onSnapshot(sn=>{reports=sn.docs.flatMap(d=>((d.data()||{}).items||[]).map(r=>({...r,reporter:d.id})));if(view==="admin")render()},()=>{});
     db.doc("accounts/"+uid).onSnapshot(s=>{acc=s.exists?{...s.data()}:{};softRender()},()=>{});
     const pq=isOwner?db.collection("payments"):db.collection("payments").where("uid","==",uid);
