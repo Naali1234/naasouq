@@ -1,0 +1,54 @@
+rules_version = '2';
+// Naa Souq — database security rules.
+// Paste this whole file into: Firebase console → Firestore Database → Rules → Publish.
+// Admin email: kapilak510@gmail.com (must match config.js).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email in ['kapilak510@gmail.com']
+        && request.auth.token.email_verified == true;
+    }
+    function notBlocked() { return !exists(/databases/$(database)/documents/blocked/$(request.auth.uid)); }
+    function me(uid) { return signedIn() && request.auth.uid == uid; }
+
+    // Ads: everyone can read; signed-in sellers post their own; only the seller or admin can change/delete.
+    // Anyone signed in may only increase the view counter.
+    match /ads/{id} {
+      allow read: if true;
+      allow create: if signedIn() && notBlocked()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.title is string && request.resource.data.title.size() <= 80;
+      allow update: if signedIn() && (
+          resource.data.ownerId == request.auth.uid
+          || isAdmin()
+          || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views'])
+              && request.resource.data.views == resource.data.get('views', 0) + 1));
+      allow delete: if signedIn() && (resource.data.ownerId == request.auth.uid || isAdmin());
+    }
+
+    // Category pictures and blocked sellers: public to read, admin to change.
+    match /catphotos/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /blocked/{id}   { allow read: if true; allow write: if isAdmin(); }
+
+    // Reports: each person writes their own; only admin reads all.
+    match /reports/{uid} { allow read, write: if me(uid) || isAdmin(); }
+
+    // Seller names shown on ads.
+    match /profiles/{uid} { allow read: if true; allow write: if me(uid); }
+
+    // Private per-person data (saved ads).
+    match /data/users/{uid}/{rest=**} { allow read, write: if me(uid); }
+
+    // Paid plans (switched off for now, kept for later).
+    match /accounts/{uid} { allow read: if me(uid) || isAdmin(); allow write: if isAdmin(); }
+    match /payments/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == 'pending';
+      allow update, delete: if isAdmin();
+    }
+  }
+}
