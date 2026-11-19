@@ -160,6 +160,21 @@ select.chip{width:auto;padding:6px 12px;border-radius:999px}
 html[dir=rtl] .mtrack{animation-name:mqr}
 @keyframes mqr{from{transform:translateX(0)}to{transform:translateX(50%)}}
 @media(prefers-reduced-motion:reduce){.mtrack{animation:none}.marq{overflow-x:auto}}
+#chatfab{position:fixed;right:16px;bottom:84px;z-index:30;width:54px;height:54px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--red),var(--org));color:#fff;font-size:24px;box-shadow:0 4px 14px rgba(230,46,4,.4);cursor:pointer}
+html[dir=rtl] #chatfab{right:auto;left:16px}
+#chatbadge{position:absolute;top:-2px;right:-2px;min-width:20px;height:20px;border-radius:10px;background:#11a36a;color:#fff;font-size:11px;font-weight:700;line-height:20px;padding:0 5px;display:none}
+@media(min-width:900px){#chatfab{bottom:24px}}
+.adminbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#fff3cf;border:1px solid #ffd66b;border-radius:14px;padding:10px 14px;margin-bottom:10px;font-size:13.5px}
+.adminbar b{flex:1;min-width:180px}
+.mybar{background:#e8f1ff;border:1px solid #bcd5ff;border-radius:14px;padding:10px 14px;margin-bottom:10px;font-size:13px}
+.chatlog{height:46vh;overflow:auto;background:var(--bg);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.msg{max-width:80%;padding:8px 12px;border-radius:14px;font-size:14px;line-height:1.4;white-space:pre-wrap;word-wrap:break-word}
+.msg small{display:block;font-size:10px;opacity:.7;margin-top:2px}
+.msg.me{align-self:flex-end;background:linear-gradient(135deg,var(--red),var(--org));color:#fff;border-bottom-right-radius:4px}
+.msg.them{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:4px}
+.chatin{display:flex;gap:8px;margin-top:8px}.chatin textarea{min-height:44px;height:44px;flex:1}
+.inbox .it{cursor:pointer}
+.ubadge{background:#11a36a;color:#fff;border-radius:10px;font-size:11px;padding:1px 7px;font-weight:700}
 .foot{text-align:center;color:var(--mut);font-size:11.5px;margin-top:24px}
 </style>
 <style>
@@ -211,6 +226,7 @@ html[dir=rtl] .mtrack{animation-name:mqr}
 <nav><div class="in" id="nav"></div></nav>
 <div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
 <div id="toast"></div>
+<button id="chatfab" onclick="openChat()" aria-label="Messages">💬<span id="chatbadge"></span></button>
 
 <script>
 /* ---------- Business rules ---------- */
@@ -250,7 +266,7 @@ const AR={"Home":"الرئيسية","My Ads":"إعلاناتي","Post Ad":"أض�
 "Choose your country":"اختر بلدك","Search country…":"ابحث عن بلد…","Showing {0} · prices in {1} — tap the country to change":"عرض {0} · الأسعار بـ {1} — اضغط على الدولة للتغيير",
 "This marketplace needs you to be signed in to claude.ai to load and post ads.":"يجب تسجيل الدخول لعرض الإعلانات ونشرها.","Ads can't be reached yet — showing what's available. They'll appear automatically once connected.":"تعذّر الوصول إلى الإعلانات حالياً — ستظهر تلقائياً عند الاتصال.",
 "Can't connect right now — please check your internet connection and refresh.":"تعذّر الاتصال حالياً — تحقق من الإنترنت وحدّث الصفحة.","Sign in to post your ads — it's free.":"سجّل الدخول لنشر إعلاناتك — مجاناً.","Sign in to see and manage your ads.":"سجّل الدخول لعرض إعلاناتك وإدارتها.","Continue with Google":"المتابعة باستخدام Google","Use email instead":"استخدم البريد الإلكتروني","Sign in":"تسجيل الدخول","or use email":"أو استخدم البريد الإلكتروني","Your name (for new accounts)":"اسمك (للحسابات الجديدة)","Email":"البريد الإلكتروني","Password (6+ characters)":"كلمة المرور (6 أحرف أو أكثر)","Create account":"إنشاء حساب","Forgot password?":"نسيت كلمة المرور؟","Sign-in didn't complete, please try again":"لم يكتمل تسجيل الدخول، حاول مرة أخرى","Enter your email and a password of 6+ characters":"أدخل بريدك وكلمة مرور من 6 أحرف أو أكثر","Account created — check your email to verify it":"تم إنشاء الحساب — تحقق من بريدك لتأكيده","This email already has an account — tap Sign in":"هذا البريد لديه حساب — اضغط تسجيل الدخول","Wrong email or password":"البريد أو كلمة المرور غير صحيحة","Type your email first":"اكتب بريدك أولاً","Password reset email sent":"تم إرسال رسالة إعادة تعيين كلمة المرور","Signed in":"تم تسجيل الدخول","Signed in as {0}":"مسجّل باسم {0}","Sign out":"تسجيل الخروج",
-"My account":"حسابي","✅ Sent for approval — your ad goes live once the admin approves it":"✅ أُرسل للمراجعة — سيُنشر إعلانك بعد موافقة الإدارة","✅ Changes saved — sent for approval again":"✅ تم الحفظ — أُرسل للمراجعة مرة أخرى","Waiting for approval":"بانتظار الموافقة","Not approved":"غير مقبول",
+"My account":"حسابي","{0} of your ads is waiting for approval. It will go live once the admin approves it.":"{0} من إعلاناتك بانتظار الموافقة. سيُنشر بعد موافقة الإدارة.","{0} of your ads was not approved — see My Ads for the reason.":"{0} من إعلاناتك لم يُقبل — راجع إعلاناتي لمعرفة السبب.","You have a new message from Naa Souq.":"لديك رسالة جديدة من Naa Souq.","Open":"فتح","Message Naa Souq":"راسل Naa Souq","Ask us anything — about your ads, approvals or the website. We reply here.":"اسألنا عن أي شيء — إعلاناتك أو الموافقات أو الموقع. نرد عليك هنا.","Type your message…":"اكتب رسالتك…","Send":"إرسال","You":"أنت","No messages yet — say hello!":"لا توجد رسائل بعد — ابدأ المحادثة!","✅ Sent for approval — your ad goes live once the admin approves it":"✅ أُرسل للمراجعة — سيُنشر إعلانك بعد موافقة الإدارة","✅ Changes saved — sent for approval again":"✅ تم الحفظ — أُرسل للمراجعة مرة أخرى","Waiting for approval":"بانتظار الموافقة","Not approved":"غير مقبول",
 "Filters":"تصفية","Saved":"المحفوظة","Newest first":"الأحدث أولاً","Price: low to high":"السعر: من الأقل للأعلى","Price: high to low":"السعر: من الأعلى للأقل","Min price":"أقل سعر","Max price":"أعلى سعر","City / Area":"المدينة / المنطقة","Apply":"تطبيق","Clear":"مسح","No saved ads yet — tap the heart on any ad to save it.":"لا توجد إعلانات محفوظة — اضغط على القلب لحفظ أي إعلان.","Sign in to save ads":"سجّل الدخول لحفظ الإعلانات","SOLD":"تم البيع","Terms of use":"شروط الاستخدام","Privacy policy":"سياسة الخصوصية",
 "Your account has been blocked from posting. Contact the site owner if you think this is a mistake.":"تم إيقاف حسابك عن النشر. تواصل مع إدارة الموقع إذا كان ذلك خطأ.","Not allowed: weapons, drugs, alcohol, medicines, counterfeit goods, or anything illegal in your country.":"ممنوع: الأسلحة، المخدرات، الكحول، الأدوية، البضائع المقلدة، أو أي شيء مخالف للقانون في بلدك.","Edit ad":"تعديل الإعلان","Save changes":"حفظ التعديلات","Saving…":"جارٍ الحفظ…","✅ Changes saved":"✅ تم حفظ التعديلات","Couldn't save, please try again":"تعذّر الحفظ، حاول مرة أخرى",
 "{0} of your ads will expire within 24 hours — tap Renew to keep them live for another {1} days.":"{0} من إعلاناتك ستنتهي خلال 24 ساعة — اضغط تجديد لإبقائها {1} أيام أخرى.","Renew":"تجديد","Edit":"تعديل","Marked as sold":"تم وضع علامة مباع","Marked as available":"الإعلان متاح مجدداً","Couldn't update, please try again":"تعذّر التحديث، حاول مرة أخرى","Views":"المشاهدات","Safety tip: meet in a public place and never pay before seeing the item.":"نصيحة أمان: قابل البائع في مكان عام ولا تدفع قبل معاينة المنتج.","Share":"مشاركة","Copy link":"نسخ الرابط","Mark as sold":"تم البيع","Mark as available":"إعادة كمتاح","Report ad":"الإبلاغ عن الإعلان","Link copied":"تم نسخ الرابط","This ad is no longer available":"هذا الإعلان لم يعد متاحاً",
@@ -369,7 +385,7 @@ function homeHTML(){
   if(status==="loading")body=`<div class="empty"><div class="e"><img class="spin" src="loading.png" alt="" style="width:46px"></div>${T("Loading ads in {0}…",esc(cName(country)))}</div>`;
   else if(!list.length)body=`<div class="empty"><div class="e">${showSaved?"❤️":flag(country)}</div>${showSaved?T("No saved ads yet — tap the heart on any ad to save it."):q||cat!=="All"||fon?T("No ads match your search."):T("No ads in {0} yet.",esc(cName(country)))}<br><br><button class="btn" onclick="go('post')">${T("Be the first to post")}</button></div>`;
   else body=`<div class="grid">${list.map(cardHTML).join("")}</div>`;
-  return statusBanner()+`<div class="chips">${chips}</div>`+fbar+promo+
+  return statusBanner()+homeNotices()+`<div class="chips">${chips}</div>`+fbar+promo+
     `<div class="sec-h"><h2>${flag(country)} ${T("Latest in {0}",esc(cName(country)))}</h2><span class="muted">${T("{0} ads",list.length)}</span></div>`+body+
     `<div class="foot">Naa Souq · ${T("Buy & sell locally, in {0} countries",COUNTRIES.length)}<br><a href="#" onclick="event.preventDefault();openLegal('terms')">${T("Terms of use")}</a> · <a href="#" onclick="event.preventDefault();openLegal('privacy')">${T("Privacy policy")}</a></div>`;
 }
@@ -396,6 +412,15 @@ async function doGoogle(){try{await window.nxSignInGoogle()}catch(e){toast(T("Si
 async function doEmail(isNew){const e=$("#semail").value.trim(),p=$("#spass").value,n=$("#sname").value.trim();if(!e||p.length<6){toast(T("Enter your email and a password of 6+ characters"));return}
   try{await window.nxEmailAuth(e,p,isNew,n);if(isNew)toast(T("Account created — check your email to verify it"))}catch(x){const c=(x&&x.code)||"";toast(c.includes("email-already")?T("This email already has an account — tap Sign in"):c.includes("invalid")||c.includes("wrong")||c.includes("not-found")?T("Wrong email or password"):T("Sign-in didn't complete, please try again"))}}
 async function doReset(){const e=$("#semail").value.trim();if(!e){toast(T("Type your email first"));return}try{await window.nxResetPassword(e);toast(T("Password reset email sent"))}catch(x){toast(T("Couldn't send, please try again"))}}
+function homeNotices(){
+  let h="";
+  if(isOwner){const pa=pendingAds.length+legacyAds.length,um=chats.filter(c=>c.unreadAdmin>0).length;
+    if(pa||um)h+=`<div class="adminbar"><b>🔔 ${pa?`${pa} ad${pa>1?"s":""} waiting for your approval`:""}${pa&&um?" · ":""}${um?`${um} new message${um>1?"s":""}`:""}</b>${pa?`<button class="btn sm" onclick="go('admin')">Review ads</button>`:""}${um?`<button class="btn sec sm" onclick="openInbox()">Open messages</button>`:""}</div>`}
+  else if(uid){const mp=myAds.filter(a=>a.status==="pending").length,mr=myAds.filter(a=>a.status==="rejected").length;
+    if(mp)h+=`<div class="mybar">⏳ ${T("{0} of your ads is waiting for approval. It will go live once the admin approves it.",mp)}</div>`;
+    if(mr)h+=`<div class="mybar" style="background:#ffeceb;border-color:#ffc9c4">${T("{0} of your ads was not approved — see My Ads for the reason.",mr)} <a href="#my">${T("My Ads")}</a></div>`;
+    if(myChat&&myChat.unreadUser>0)h+=`<div class="mybar" style="background:#e3f6ed;border-color:#b5e8cf">💬 ${T("You have a new message from Naa Souq.")} <a href="#" onclick="event.preventDefault();openChat()">${T("Open")}</a></div>`}
+  return h}
 function goHome(e){if(e)e.preventDefault();cat="All";q="";fMin="";fMax="";fCity="";showSaved=false;showFilters=false;const qi=$("#q");if(qi)qi.value="";closeModal();if(view!=="home")go("home");else{render();window.scrollTo(0,0)}}
 function applyF(){fMin=$("#fmin").value;fMax=$("#fmax").value;fCity=$("#fcity").value.trim();showFilters=false;render()}
 function clearF(){fMin="";fMax="";fCity="";showFilters=false;render()}
@@ -692,7 +717,39 @@ function drawCountries(){
 function setCountry(c){country=c;save("nx_country",c);closeModal();cat="All";subscribeAds();render()}
 
 function openModal(h){$("#sheet").innerHTML=h;$("#modal").classList.add("open")}
-function closeModal(){$("#modal").classList.remove("open")}
+function closeModal(){$("#modal").classList.remove("open");if(window._chatUnsub){try{window._chatUnsub()}catch(e){}window._chatUnsub=null}}
+/* ---------- Messages ---------- */
+let chats=[],myChat=null;
+const tfmt=t=>new Date(t).toLocaleString(undefined,{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+function updateChatBadge(){const b=$("#chatbadge");if(!b)return;const n=isOwner?chats.filter(c=>c.unreadAdmin>0).length:(myChat&&myChat.unreadUser)||0;b.textContent=n;b.style.display=n?"block":"none"}
+function openChat(){if(!uid||!db){openSignIn();return}if(isOwner)openInbox();else openThread(uid,false)}
+function openInbox(){
+  const rows=[...chats].sort((a,b)=>(b.lastAt||0)-(a.lastAt||0)).map(c=>`<div class="it" onclick="openThread('${esc(c.id)}',true)"><div class="im">💬</div><div class="tx"><b>${esc(c.name||"Customer")}${c.unreadAdmin>0?` <span class="ubadge">${c.unreadAdmin}</span>`:""}</b><span class="muted" style="font-size:12px">${esc((c.lastText||"").slice(0,70))} · ${c.lastAt?tfmt(c.lastAt):""}</span></div></div>`).join("");
+  openModal(`<div class="hd"><h3>💬 Messages from customers</h3><button class="x" onclick="closeModal()">✕</button></div><div class="list inbox">${rows||`<p class="muted">No messages yet.</p>`}</div>`);
+}
+function openThread(id,asAdmin){
+  const c=chats.find(x=>x.id===id);
+  openModal(`<div class="hd">${asAdmin?`<button class="x" onclick="closeModal();openInbox()">←</button>`:""}<h3>💬 ${asAdmin?esc((c&&c.name)||"Customer"):T("Message Naa Souq")}</h3><button class="x" onclick="closeModal()">✕</button></div>
+  ${asAdmin?"":`<p class="note" style="margin:-4px 0 8px">${T("Ask us anything — about your ads, approvals or the website. We reply here.")}</p>`}
+  <div class="chatlog" id="chatlog"><p class="muted" style="text-align:center">…</p></div>
+  <div class="chatin"><textarea id="chattx" maxlength="1000" placeholder="${T("Type your message…")}"></textarea><button class="btn" onclick="sendMsg('${esc(id)}',${asAdmin})">${T("Send")}</button></div>`);
+  window._chatUnsub=db.collection("chats/"+id+"/msgs").orderBy("at").limit(300).onSnapshot(sn=>{
+    const el=$("#chatlog");if(!el)return;const mine=asAdmin?"admin":"user";
+    el.innerHTML=sn.docs.map(d=>{const m=d.data();return `<div class="msg ${m.from===mine?"me":"them"}">${esc(m.text)}<small>${m.from==="admin"?"Naa Souq":esc((c&&c.name)||T("You"))} · ${m.at?tfmt(m.at):""}</small></div>`}).join("")||`<p class="muted" style="text-align:center">${T("No messages yet — say hello!")}</p>`;
+    el.scrollTop=el.scrollHeight},()=>{});
+  // mark as read
+  (async()=>{try{const ref=db.doc("chats/"+id);const sn=await ref.get();if(sn.exists){const d=sn.data();if(asAdmin&&d.unreadAdmin)await ref.update({unreadAdmin:0});if(!asAdmin&&d.unreadUser)await ref.update({unreadUser:0})}}catch(e){}})();
+}
+async function sendMsg(id,asAdmin){
+  const tx=$("#chattx");const text=(tx.value||"").trim();if(!text)return;tx.value="";
+  try{
+    const now=Date.now();
+    await db.collection("chats/"+id+"/msgs").add({from:asAdmin?"admin":"user",text:text.slice(0,1000),at:now});
+    const ref=db.doc("chats/"+id);const sn=await ref.get();const d=sn.exists?sn.data():{};
+    let name=d.name||"";if(!asAdmin&&!name&&window.nxCurrentUser){const u=await window.nxCurrentUser();name=(u&&(u.name||u.email))||"Customer"}
+    await ref.set({...d,name:name||d.name||"Customer",lastText:text.slice(0,120),lastAt:now,lastFrom:asAdmin?"admin":"user",unreadAdmin:asAdmin?(d.unreadAdmin||0):((d.unreadAdmin||0)+1),unreadUser:asAdmin?((d.unreadUser||0)+1):(d.unreadUser||0)});
+  }catch(e){tx.value=text;toast(T("Couldn't send, please try again"))}
+}
 
 /* ---------- Data ---------- */
 function startTimer(){clearTimeout(loadTimer);loadTimer=setTimeout(()=>{if(status==="loading"){status="slow";if(view==="home")render()}},10000)}
@@ -726,8 +783,10 @@ try{if("serviceWorker" in navigator&&window.top===window.self&&location.protocol
   db.collection("blocked").onSnapshot(sn=>{blocked=new Set(sn.docs.map(d=>d.id));if(view==="home"||view==="admin"||view==="post")render()},()=>{});
   db.collection("catphotos").onSnapshot(s=>{const m={};s.docs.forEach(d=>{const x=d.data();if(x&&x.cat&&x.photo)m[x.cat]=x.photo});catPhotos=m;if(view==="home"||view==="admin")render()},()=>{});
   if(uid){
-    db.collection("ads").where("ownerId","==",uid).onSnapshot(s=>{myAds=s.docs.map(d=>({id:d.id,...d.data()}));if(view==="my")render()},()=>{});
+    db.collection("ads").where("ownerId","==",uid).onSnapshot(s=>{myAds=s.docs.map(d=>({id:d.id,...d.data()}));if(view==="my"||view==="home")render()},()=>{});
     db.doc("data/users/"+uid+"/prefs").onSnapshot(sn=>{const d=sn.exists?sn.data():{};favs=new Set(Array.isArray(d.favs)?d.favs:[]);if(view==="home")render()},()=>{});
+    if(isOwner)db.collection("chats").onSnapshot(sn=>{chats=sn.docs.map(d=>({id:d.id,...d.data()}));updateChatBadge();if(view==="home")render()},()=>{});
+    else db.doc("chats/"+uid).onSnapshot(sn=>{myChat=sn.exists?sn.data():null;updateChatBadge();if(view==="home")render()},()=>{});
     if(isOwner)db.collection("ads").where("status","==","pending").onSnapshot(sn=>{pendingAds=sn.docs.map(d=>({id:d.id,...d.data()}));renderNav();if(view==="admin")render()},()=>{});
     if(isOwner)db.collection("reports").onSnapshot(sn=>{reports=sn.docs.flatMap(d=>((d.data()||{}).items||[]).map(r=>({...r,reporter:d.id})));if(view==="admin")render()},()=>{});
     db.doc("accounts/"+uid).onSnapshot(s=>{acc=s.exists?{...s.data()}:{};softRender()},()=>{});
